@@ -1,0 +1,4 @@
+apiVersion: v2
+name: cluster-gen
+version: 1.0.0
+description: A minimal helm-chart to deploy cluster-gen with a service and an ingress. You can not do much, but enough.
