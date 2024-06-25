@@ -1,0 +1,5 @@
+.git/
+pnpm-lock.yaml
+templates/
+src/components/clusterstack-form.tsx
+src/components/cluster-form.tsx
