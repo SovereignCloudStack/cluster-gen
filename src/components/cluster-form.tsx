@@ -352,7 +352,7 @@ export function ClusterForm() {
                         <SelectItem value="SCS-8V-32">CPU: 8, RAM: 32GiB (SCS-8V-32)</SelectItem>
                         <SelectItem value="SCS-1V-2">CPU: 1, RAM: 2GiB (SCS-1V-2)</SelectItem>
                         <SelectItem value="SCS-2V-4">CPU: 2, RAM: 4GiB (SCS-2V-4)</SelectItem>
-                        <SelectItem value="SCS-4V-8">CPU: 4, RAM: 8GiB (CS-4V-8)</SelectItem>
+                        <SelectItem value="SCS-4V-8">CPU: 4, RAM: 8GiB (SCS-4V-8)</SelectItem>
                         <SelectItem value="SCS-8V-16">CPU: 8, RAM: 16GiB (SCS-8V-16)</SelectItem>
                         <SelectItem value="SCS-16V-32">CPU: 16, RAM: 32GiB (SCS-16V-32)</SelectItem>
                         <SelectItem value="SCS-1V-8">CPU: 1, RAM: 8GiB (SCS-1V-8)</SelectItem>
