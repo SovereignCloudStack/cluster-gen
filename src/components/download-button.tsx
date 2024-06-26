@@ -34,7 +34,7 @@ export function DownloadButton(obj: any) {
   return (
     <a ref={linkRef}>
       <Button type="submit" onClick={handleDownload} className="mt-8 mr-4">
-        Generate
+        Download
       </Button>
     </a>
   );
