@@ -73,8 +73,8 @@ export function ClusterForm() {
       cluster_name: "",
       namespace: "",
       kubernetes_version: "1.29.3",
-      controller_flavor: "SCS-2V-4-50",
-      worker_flavor: "SCS-2V-4-50",
+      controller_flavor: "SCS-4V-8-20",
+      worker_flavor: "SCS-4V-8-20",
       external_id: "ebfe5546-f09f-4f42-ab54-094e457d42ec",
       pod_cidr: "192.168.0.0/16",
       service_cidr: "10.96.0.0/12",
@@ -408,7 +408,7 @@ export function ClusterForm() {
               name="worker_flavor"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-m">Worker Flavor</FormLabel>
+                  <FormLabel className="text-m">Worker Flavor <span className='border-2 rounded-3xl bg-gray-200 text-black px-2' title="SCS-( CPU )-( RAM[GiB] )-( DISK[GB] )">i</span></FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
