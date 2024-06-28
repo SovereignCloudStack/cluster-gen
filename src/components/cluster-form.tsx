@@ -1,9 +1,9 @@
 "use client"
 
-import React from 'react';
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import SyntaxHighlighter from 'react-syntax-highlighter';
 
 import {
   Form,
@@ -25,8 +25,7 @@ import {
   SelectLabel,
 } from "@/components/ui/select";
 
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { DownloadButton } from './download-button';
+import { DownloadButton } from '@/components/download-button';
 
 export function ClusterForm() {
 
@@ -381,7 +380,7 @@ export function ClusterForm() {
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    <p>Choose an instance flavor for your control plane</p>
+                    Choose an instance flavor for your control plane
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

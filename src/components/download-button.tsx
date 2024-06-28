@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 
 export function DownloadButton(obj: any) {
   const linkRef = useRef(null);
-
   const handleDownload = async () => {
     if (obj.ready === true) {
       const blob = new Blob([obj.resource], {
@@ -20,12 +19,7 @@ export function DownloadButton(obj: any) {
       }
 
       link.href = url;
-
-      if (obj.resource[19] === ".") {
-        link.download = "cluster.yaml";
-      } else {
-        link.download = "clusterstack.yaml";
-      }
+      link.download = "cluster.yaml";
       link.click();
       window.URL.revokeObjectURL(url);
     }

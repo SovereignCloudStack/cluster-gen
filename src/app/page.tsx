@@ -5,12 +5,30 @@ import {
   PageHeaderHeading,
 } from "@/components/page-header";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { ClusterStackForm } from "@/components/clusterstack-form";
 import { ClusterForm } from "@/components/cluster-form";
 
-export default function IndexPage() {
+async function getClusterClasses() {
+  const res = await fetch(
+    "https://moin.k8s.scs.community/apis/cluster.x-k8s.io/v1beta1/clusterclasses",
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
+
+export default async function IndexPage() {
+  const data = await getClusterClasses();
+  const items = data?.items;
+  const out = items.map((item: any, index: any) => {
+    return (
+      <>
+        <div key={index}>{item.metadata.name}</div>
+      </>
+    );
+  });
   return (
     <div className="container relative">
       <PageHeader>
@@ -19,20 +37,10 @@ export default function IndexPage() {
           Generate Cluster objects based on SCS Cluster Stacks
         </PageHeaderDescription>
         <PageActions>
-          <Tabs defaultValue="clusterstacks" className="w-[2000px] mt-2">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="clusterstacks">Cluster Stack</TabsTrigger>
-              <TabsTrigger value="cluster">Cluster</TabsTrigger>
-            </TabsList>
-            <div className="w-full space-x-8 mt-14">
-              <TabsContent value="clusterstacks">
-                <ClusterStackForm />
-              </TabsContent>
-              <TabsContent value="cluster">
-                <ClusterForm />
-              </TabsContent>
-            </div>
-          </Tabs>
+          <div className="mt-14">
+            <ClusterForm />
+            {out}
+          </div>
         </PageActions>
       </PageHeader>
     </div>
