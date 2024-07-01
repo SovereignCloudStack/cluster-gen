@@ -1,3 +1,5 @@
+export const revalidate = 900; // revalidate at most every 15mins
+
 import {
   PageActions,
   PageHeader,
@@ -21,14 +23,8 @@ async function getClusterClasses() {
 
 export default async function IndexPage() {
   const data = await getClusterClasses();
-  const items = data?.items;
-  const out = items.map((item: any, index: any) => {
-    return (
-      <>
-        <div key={index}>{item.metadata.name}</div>
-      </>
-    );
-  });
+  const ccs = data?.items;
+
   return (
     <div className="container relative">
       <PageHeader>
@@ -38,8 +34,7 @@ export default async function IndexPage() {
         </PageHeaderDescription>
         <PageActions>
           <div className="mt-14">
-            <ClusterForm />
-            {out}
+            <ClusterForm ccs={ccs} />
           </div>
         </PageActions>
       </PageHeader>

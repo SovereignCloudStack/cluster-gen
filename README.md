@@ -4,17 +4,9 @@ Proof of concept Web UI for creating Cluster objects based on SCS Cluster Stacks
 
 ## Workflow
 
-- Read cluster stack and clusterclass templates
+- Read clusterclass definitions from the public kube-apiserver API of the moin-cluster
 - Render/populate yaml in live editor with good defaults
-- On "Download": perform form validation, create yaml file and open up download prompt (all client-side)
-
-## Limitations (to be implemented)
-
-- ClusterClass and Cluster Stack templates are [hard-coded](src/components/cluster-form.tsx#L90) and limited to the `scs/alpha` Cluster Stacks
-  - Ideally they should reflect the current state of each specific Cluster Stack (e.g. metal3/kamaji)
-  - Possbile solution: Either fetch and parse the ClusterClasses using the GitHub API or use the schema provided by [kube-apiserver](https://github.com/SovereignCloudStack/cluster-gen/issues/3)
-- Cluster Stack releases are [hard-coded](src/components/clusterstack-form.tsx#L116)
-  - Possible solution: Use GitHub API to get releases
+- On Download: perform form validation, create yaml file and open up download prompt
 
 ## Built with
 

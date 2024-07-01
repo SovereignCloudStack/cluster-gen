@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export function DownloadButton(obj: any) {
   const linkRef = useRef(null);
+
   const handleDownload = async () => {
     if (obj.ready === true) {
       const blob = new Blob([obj.resource], {

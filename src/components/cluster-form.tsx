@@ -26,8 +26,26 @@ import {
 } from "@/components/ui/select";
 
 import { DownloadButton } from '@/components/download-button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button"
 
-export function ClusterForm() {
+import Link from "next/link";
+
+import type { ClusterClass } from "@/types/clusterclass.type";
+import { parser } from "@/lib/parser";
+
+export const ClusterForm = ({ ccs }: { ccs: Array<ClusterClass> }) => {
+
+  const out = parser({ ccs })
 
   const FormSchema = z.object({
     cluster_name: z.string().min(2, {
@@ -72,8 +90,8 @@ export function ClusterForm() {
       cluster_name: "",
       namespace: "",
       kubernetes_version: "1.29.3",
-      controller_flavor: "SCS-4V-8-20",
-      worker_flavor: "SCS-4V-8-20",
+      controller_flavor: "SCS-2V-4-20s",
+      worker_flavor: "SCS-2V-4-20s",
       external_id: "ebfe5546-f09f-4f42-ab54-094e457d42ec",
       pod_cidr: "192.168.0.0/16",
       service_cidr: "10.96.0.0/12",
@@ -83,8 +101,6 @@ export function ClusterForm() {
   });
 
   const ready = form.formState.isValid
-
-  const kubernetesVersion = form.watch("clusterstack").split("-")[2] + "." + form.watch("clusterstack").split("-")[3]
 
   const resource = 'apiVersion: cluster.x-k8s.io/v1beta1\n' +
     'kind: Cluster\n' +
@@ -121,6 +137,12 @@ export function ClusterForm() {
     '          name: ' + form.watch("clusterstack") + '\n' +
     '          replicas: ' + form.watch("worker_replicas")
 
+  const k8s_versions = [{
+    "1.30": ["1.30.2", "1.30.1", "1.30.0"],
+    "1.29": ["1.29.6", "1.29.5", "1.29.4", "1.29.3", "1.29.2", "1.29.1" + "1.29.0"],
+    "1.28": ["1.28.11", "1.28.10", "1.28.9", "1.28.8", "1.28.7", "1.28.6", "1.28.5", "1.28.4", "1.28.3", "1.28.2", "1.28.1", "1.28.0"]
+  }]
+
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(resource)
   }
@@ -129,399 +151,421 @@ export function ClusterForm() {
     <>
       <div className="flex space-x-8">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-1/2">
-            <FormField
-              control={form.control}
-              name="cluster_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cluster name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="cs-cluster" {...field} />
-                  </FormControl>
-                  <FormDescription>Name of your Cluster</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="namespace"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Namespace</FormLabel>
-                  <FormControl>
-                    <Input placeholder="my-tenant" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Namespace in which to deploy the Cluster
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="clusterstack"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-m">Cluster Stack</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>1.30</SelectLabel>
-                        <SelectItem value="openstack-alpha-1-30-v2">
-                          openstack-alpha-1-30-v2
-                        </SelectItem>
-                        <SelectItem value="openstack-alpha-1-30-v1">
-                          openstack-alpha-1-30-v1
-                        </SelectItem>
-                        <SelectItem value="openstack-kamaji-1-30-v0-sha-11930ee">
-                          openstack-kamaji-1-30-v0-sha-11930ee
-                        </SelectItem>
-                      </SelectGroup>
-                      <SelectGroup>
-                        <SelectLabel>1.29</SelectLabel>
-                        <SelectItem value="openstack-alpha-1-29-v3">
-                          openstack-alpha-1-29-v3
-                        </SelectItem>
-                        <SelectItem value="openstack-alpha-1-29-v2">
-                          openstack-alpha-1-29-v2
-                        </SelectItem>
-                        <SelectItem value="openstack-alpha-1-29-v1">
-                          openstack-alpha-1-29-v1
-                        </SelectItem>
-                      </SelectGroup>
-                      <SelectGroup>
-                        <SelectLabel>1.28</SelectLabel>
-                        <SelectItem value="openstack-scs-1-28-v1">
-                          openstack-scs-1-28-v1
-                        </SelectItem>
-                        <SelectItem value="openstack-alpha-1-28-v4">
-                          openstack-alpha-1-28-v4
-                        </SelectItem>
-                        <SelectItem value="openstack-alpha-1-28-v1">
-                          openstack-alpha-1-28-v3
-                        </SelectItem>
-                        <SelectItem value="metal3-alpha-1-28-v0-sha-b699b93">
-                          metal3-alpha-1-28-v0-sha-b699b93
-                        </SelectItem>
-                        <SelectItem value="metal3-alpha-1-28-v0-sha-b08777e">
-                          metal3-alpha-1-28-v0-sha-b08777e
-                        </SelectItem>
-                      </SelectGroup>
-                      <SelectGroup>
-                        <SelectLabel>1.27</SelectLabel>
-                        <SelectItem value="openstack-scs-1-27-v4">
-                          openstack-scs-1-27-v4
-                        </SelectItem>
-                        <SelectItem value="openstack-scs-1-27-v3">
-                          openstack-scs-1-27-v3
-                        </SelectItem>
-                        <SelectItem value="openstack-scs-1-27-v2">
-                          openstack-scs-1-27-v2
-                        </SelectItem>
-                        <SelectItem value="openstack-alpha-1-27-v1">
-                          openstack-alpha-1-27-v1
-                        </SelectItem>
-                        <SelectItem value="openstack-wooctavia-1-27-v1">
-                          openstack-wooctavia-1-27-v1
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Select which Cluster Stack to use
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="kubernetes_version"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-m">Kubernetes version</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>1.30</SelectLabel>
-                        <SelectItem value="1.30.2">
-                          1.30.2
-                        </SelectItem>
-                        <SelectItem value="1.30.1">
-                          1.30.1
-                        </SelectItem>
-                        <SelectItem value="1.30.0">
-                          1.30.0
-                        </SelectItem>
-                      </SelectGroup>
-                      <SelectGroup>
-                        <SelectLabel>1.29</SelectLabel>
-                        <SelectItem value="1.29.6">
-                          1.29.6
-                        </SelectItem>
-                        <SelectItem value="1.29.5">
-                          1.29.5
-                        </SelectItem>
-                        <SelectItem value="1.29.4">
-                          1.29.4
-                        </SelectItem>
-                        <SelectItem value="1.29.3">
-                          1.29.3
-                        </SelectItem>
-                        <SelectItem value="1.29.2">
-                          1.29.2
-                        </SelectItem>
-                        <SelectItem value="1.29.1">
-                          1.29.1
-                        </SelectItem>
-                        <SelectItem value="1.29.0">
-                          1.29.0
-                        </SelectItem>
-                      </SelectGroup>
-                      <SelectGroup>
-                        <SelectLabel>1.28</SelectLabel>
-                        <SelectItem value="1.28.11">
-                          1.28.11
-                        </SelectItem>
-                        <SelectItem value="1.28.10">
-                          1.28.10
-                        </SelectItem>
-                        <SelectItem value="1.28.9">
-                          1.28.9
-                        </SelectItem>
-                        <SelectItem value="1.28.8">
-                          1.28.8
-                        </SelectItem>
-                        <SelectItem value="1.28.7">
-                          1.28.7
-                        </SelectItem>
-                      </SelectGroup>
-                      <SelectGroup>
-                        <SelectLabel>1.27</SelectLabel>
-                        <SelectItem value="1.27.15">
-                          1.27.15
-                        </SelectItem>
-                        <SelectItem value="1.27.14">
-                          1.27.14
-                        </SelectItem>
-                        <SelectItem value="1.27.13">
-                          1.27.13
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Select which Kubernetes minor version you want
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="controller_flavor"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-m">Controller Flavor <span className='border-2 rounded-3xl bg-gray-200 text-black px-2' title="SCS-( CPU )-( RAM[GiB] )-( DISK[GB] )">i</span></FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>vCPU (oversubscribed)</SelectLabel>
-                        <SelectItem value="SCS-1V-4">CPU: 1, RAM: 4GiB (SCS-1V-4)</SelectItem>
-                        <SelectItem value="SCS-2V-8">CPU: 2, RAM: 8GiB (SCS-2V-8)</SelectItem>
-                        <SelectItem value="SCS-4V-16">CPU: 4, RAM: 16GiB (SCS-4V-16)</SelectItem>
-                        <SelectItem value="SCS-8V-32">CPU: 8, RAM: 32GiB (SCS-8V-32)</SelectItem>
-                        <SelectItem value="SCS-1V-2">CPU: 1, RAM: 2GiB (SCS-1V-2)</SelectItem>
-                        <SelectItem value="SCS-2V-4">CPU: 2, RAM: 4GiB (SCS-2V-4)</SelectItem>
-                        <SelectItem value="SCS-4V-8">CPU: 4, RAM: 8GiB (SCS-4V-8)</SelectItem>
-                        <SelectItem value="SCS-8V-16">CPU: 8, RAM: 16GiB (SCS-8V-16)</SelectItem>
-                        <SelectItem value="SCS-16V-32">CPU: 16, RAM: 32GiB (SCS-16V-32)</SelectItem>
-                        <SelectItem value="SCS-1V-8">CPU: 1, RAM: 8GiB (SCS-1V-8)</SelectItem>
-                        <SelectItem value="SCS-2V-16">CPU: 2, RAM: 16GiB (SCS-2V-16)</SelectItem>
-                        <SelectItem value="SCS-4V-32">CPU: 4, RAM: 32GiB (SCS-4V-32)</SelectItem>
-                        <SelectItem value="SCS-2V-4-20s">CPU: 2, RAM: 4GiB (SCS-2V-4-20s)</SelectItem>
-                        <SelectItem value="SCS-4V-16-100s">CPU: 4, RAM: 16GiB (SCS-4V-16-100s)</SelectItem>
-                        <SelectItem value="SCS-1V-4-10">CPU: 1, RAM: 4GiB (SCS-1V-4-10)</SelectItem>
-                        <SelectItem value="SCS-2V-8-20">CPU: 2, RAM: 8GiB (SCS-2V-8-20)</SelectItem>
-                        <SelectItem value="SCS-4V-16-50">CPU: 4, RAM: 16GiB (SCS-4V-16-50)</SelectItem>
-                        <SelectItem value="SCS-8V-32-100">CPU: 8, RAM: 32GiB (SCS-8V-32-100)</SelectItem>
-                        <SelectItem value="SCS-1V-2-5">CPU: 1, RAM: 2GiB (SCS-1V-2-5)</SelectItem>
-                        <SelectItem value="SCS-2V-4-10">CPU: 2, RAM: 4GiB (SCS-2V-4-10)</SelectItem>
-                        <SelectItem value="SCS-4V-8-20">CPU: 4, RAM: 8GiB (SCS-4V-8-20)</SelectItem>
-                        <SelectItem value="SCS-8V-16-50">CPU: 8, RAM: 16GiB (SCS-8V-16-50)</SelectItem>
-                        <SelectItem value="SCS-16V-32-100">CPU: 16, RAM: 32GiB (SCS-16V-32-100)</SelectItem>
-                        <SelectItem value="SCS-1V-8-20">CPU: 1, RAM: 8GiB (SCS-1V-8-20)</SelectItem>
-                        <SelectItem value="SCS-2V-16-50">CPU: 2, RAM: 16GiB (SCS-2V-16-50)</SelectItem>
-                        <SelectItem value="SCS-4V-32-100">CPU: 4, RAM: 32GiB (SCS-4V-32-100)</SelectItem>
-                      </SelectGroup>
-                      <SelectGroup>
-                        <SelectLabel>vCPU (heavily oversubscribed)</SelectLabel>
-                        <SelectItem value="SCS-1L-1">CPU: 1, RAM: 1GiB (SCS-1L-1)</SelectItem>
-                        <SelectItem value="SCS-1L-1-5">CPU: 1, RAM: 1GiB (SCS-1L-1-5)</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Choose an instance flavor for your control plane
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="controlplane_replicas"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Control plane replicas</FormLabel>
-                  <FormControl>
-                    <Input type="number" min={1} max={20} {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    How many control plane replicas you want
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="worker_flavor"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-m">Worker Flavor <span className='border-2 rounded-3xl bg-gray-200 text-black px-2' title="SCS-( CPU )-( RAM[GiB] )-( DISK[GB] )">i</span></FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>vCPU (oversubscribed)</SelectLabel>
-                        <SelectItem value="SCS-1V-4">CPU: 1, RAM: 4GiB (SCS-1V-4)</SelectItem>
-                        <SelectItem value="SCS-2V-8">CPU: 2, RAM: 8GiB (SCS-2V-8)</SelectItem>
-                        <SelectItem value="SCS-4V-16">CPU: 4, RAM: 16GiB (SCS-4V-16)</SelectItem>
-                        <SelectItem value="SCS-8V-32">CPU: 8, RAM: 32GiB (SCS-8V-32)</SelectItem>
-                        <SelectItem value="SCS-1V-2">CPU: 1, RAM: 2GiB (SCS-1V-2)</SelectItem>
-                        <SelectItem value="SCS-2V-4">CPU: 2, RAM: 4GiB (SCS-2V-4)</SelectItem>
-                        <SelectItem value="SCS-4V-8">CPU: 4, RAM: 8GiB (SCS-4V-8)</SelectItem>
-                        <SelectItem value="SCS-8V-16">CPU: 8, RAM: 16GiB (SCS-8V-16)</SelectItem>
-                        <SelectItem value="SCS-16V-32">CPU: 16, RAM: 32GiB (SCS-16V-32)</SelectItem>
-                        <SelectItem value="SCS-1V-8">CPU: 1, RAM: 8GiB (SCS-1V-8)</SelectItem>
-                        <SelectItem value="SCS-2V-16">CPU: 2, RAM: 16GiB (SCS-2V-16)</SelectItem>
-                        <SelectItem value="SCS-4V-32">CPU: 4, RAM: 32GiB (SCS-4V-32)</SelectItem>
-                        <SelectItem value="SCS-2V-4-20s">CPU: 2, RAM: 4GiB (SCS-2V-4-20s)</SelectItem>
-                        <SelectItem value="SCS-4V-16-100s">CPU: 4, RAM: 16GiB (SCS-4V-16-100s)</SelectItem>
-                        <SelectItem value="SCS-1V-4-10">CPU: 1, RAM: 4GiB (SCS-1V-4-10)</SelectItem>
-                        <SelectItem value="SCS-2V-8-20">CPU: 2, RAM: 8GiB (SCS-2V-8-20)</SelectItem>
-                        <SelectItem value="SCS-4V-16-50">CPU: 4, RAM: 16GiB (SCS-4V-16-50)</SelectItem>
-                        <SelectItem value="SCS-8V-32-100">CPU: 8, RAM: 32GiB (SCS-8V-32-100)</SelectItem>
-                        <SelectItem value="SCS-1V-2-5">CPU: 1, RAM: 2GiB (SCS-1V-2-5)</SelectItem>
-                        <SelectItem value="SCS-2V-4-10">CPU: 2, RAM: 4GiB (SCS-2V-4-10)</SelectItem>
-                        <SelectItem value="SCS-4V-8-20">CPU: 4, RAM: 8GiB (SCS-4V-8-20)</SelectItem>
-                        <SelectItem value="SCS-8V-16-50">CPU: 8, RAM: 16GiB (SCS-8V-16-50)</SelectItem>
-                        <SelectItem value="SCS-16V-32-100">CPU: 16, RAM: 32GiB (SCS-16V-32-100)</SelectItem>
-                        <SelectItem value="SCS-1V-8-20">CPU: 1, RAM: 8GiB (SCS-1V-8-20)</SelectItem>
-                        <SelectItem value="SCS-2V-16-50">CPU: 2, RAM: 16GiB (SCS-2V-16-50)</SelectItem>
-                        <SelectItem value="SCS-4V-32-100">CPU: 4, RAM: 32GiB (SCS-4V-32-100)</SelectItem>
-                      </SelectGroup>
-                      <SelectGroup>
-                        <SelectLabel>vCPU (heavily oversubscribed)</SelectLabel>
-                        <SelectItem value="SCS-1L-1">CPU: 1, RAM: 1GiB (SCS-1L-1)</SelectItem>
-                        <SelectItem value="SCS-1L-1-5">CPU: 1, RAM: 1GiB (SCS-1L-1-5)</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Choose an instance flavor for your worker nodes
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="worker_replicas"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Worker replicas</FormLabel>
-                  <FormControl>
-                    <Input type="number" min={1} max={20} {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    How many worker replicas you want
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="external_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>External network ID</FormLabel>
-                  <FormControl>
-                    <Input placeholder="ebfe5546-f09f-4f42-ab54-094e457d42ec" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Enter your external network ID
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="pod_cidr"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Pod CIDRs</FormLabel>
-                  <FormControl>
-                    <Input placeholder="192.168.0.0/16" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    CIDR addresses for all pods in the cluster
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="service_cidr"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Service CIDRs</FormLabel>
-                  <FormControl>
-                    <Input placeholder="10.96.0.0/12" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    CIDR addresses for all services in the cluster
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="">
+            <div className="grid grid-row-cols grid-cols-2 gap-4 mb-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Cluster</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="cluster_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cluster name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="cs-cluster" {...field} />
+                        </FormControl>
+                        <FormDescription>Name of your Cluster</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="namespace"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Namespace</FormLabel>
+                        <FormControl>
+                          <Input placeholder="my-tenant" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Namespace in which to deploy the Cluster
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="clusterstack"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-m">Cluster Stack</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>1.30</SelectLabel>
+                              <SelectItem value="openstack-alpha-1-30-v2">
+                                openstack-alpha-1-30-v2
+                              </SelectItem>
+                              <SelectItem value="openstack-alpha-1-30-v1">
+                                openstack-alpha-1-30-v1
+                              </SelectItem>
+                              <SelectItem value="openstack-kamaji-1-30-v0-sha-11930ee">
+                                openstack-kamaji-1-30-v0-sha-11930ee
+                              </SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>1.29</SelectLabel>
+                              <SelectItem value="openstack-alpha-1-29-v3">
+                                openstack-alpha-1-29-v3
+                              </SelectItem>
+                              <SelectItem value="openstack-alpha-1-29-v2">
+                                openstack-alpha-1-29-v2
+                              </SelectItem>
+                              <SelectItem value="openstack-alpha-1-29-v1">
+                                openstack-alpha-1-29-v1
+                              </SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>1.28</SelectLabel>
+                              <SelectItem value="openstack-scs-1-28-v1">
+                                openstack-scs-1-28-v1
+                              </SelectItem>
+                              <SelectItem value="openstack-alpha-1-28-v4">
+                                openstack-alpha-1-28-v4
+                              </SelectItem>
+                              <SelectItem value="openstack-alpha-1-28-v1">
+                                openstack-alpha-1-28-v3
+                              </SelectItem>
+                              <SelectItem value="metal3-alpha-1-28-v0-sha-b699b93">
+                                metal3-alpha-1-28-v0-sha-b699b93
+                              </SelectItem>
+                              <SelectItem value="metal3-alpha-1-28-v0-sha-b08777e">
+                                metal3-alpha-1-28-v0-sha-b08777e
+                              </SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          Select which Cluster Stack to use
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="kubernetes_version"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-m">Kubernetes version</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>1.30</SelectLabel>
+                              <SelectItem value="1.30.2">
+                                1.30.2
+                              </SelectItem>
+                              <SelectItem value="1.30.1">
+                                1.30.1
+                              </SelectItem>
+                              <SelectItem value="1.30.0">
+                                1.30.0
+                              </SelectItem>
+                            </SelectGroup>
+
+                            <SelectGroup>
+                              <SelectLabel>1.29</SelectLabel>
+                              <SelectItem value="1.29.6">
+                                1.29.6
+                              </SelectItem>
+                              <SelectItem value="1.29.5">
+                                1.29.5
+                              </SelectItem>
+                              <SelectItem value="1.29.4">
+                                1.29.4
+                              </SelectItem>
+                              <SelectItem value="1.29.3">
+                                1.29.3
+                              </SelectItem>
+                              <SelectItem value="1.29.2">
+                                1.29.2
+                              </SelectItem>
+                              <SelectItem value="1.29.1">
+                                1.29.1
+                              </SelectItem>
+                              <SelectItem value="1.29.0">
+                                1.29.0
+                              </SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>1.28</SelectLabel>
+                              <SelectItem value="1.28.11">
+                                1.28.11
+                              </SelectItem>
+                              <SelectItem value="1.28.10">
+                                1.28.10
+                              </SelectItem>
+                              <SelectItem value="1.28.9">
+                                1.28.9
+                              </SelectItem>
+                              <SelectItem value="1.28.8">
+                                1.28.8
+                              </SelectItem>
+                              <SelectItem value="1.28.7">
+                                1.28.7
+                              </SelectItem>
+                              <SelectItem value="1.28.6">
+                                1.28.6
+                              </SelectItem>
+                              <SelectItem value="1.28.5">
+                                1.28.5
+                              </SelectItem>
+                              <SelectItem value="1.28.4">
+                                1.28.4
+                              </SelectItem>
+                              <SelectItem value="1.28.3">
+                                1.28.3
+                              </SelectItem>
+                              <SelectItem value="1.28.2">
+                                1.28.2
+                              </SelectItem>
+                              <SelectItem value="1.28.1">
+                                1.28.1
+                              </SelectItem>
+                              <SelectItem value="1.28.0">
+                                1.28.0
+                              </SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          Select which Kubernetes minor version you want
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+              <Card className="">
+                <CardHeader>
+                  <CardTitle>Machines</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="controller_flavor"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-m">Controller Flavor</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>1 vCPU</SelectLabel>
+                              <SelectItem value="SCS-1L-1">1 vCPU + 1GiB RAM (SCS-1L-1)</SelectItem>
+                              <SelectItem value="SCS-1L-1-5">1 vCPU + 1GiB RAM + 5GB Disk (SCS-1L-1-5)</SelectItem>
+                              <SelectItem value="SCS-1V-2">1 vCPU + 2GiB RAM (SCS-1V-2)</SelectItem>
+                              <SelectItem value="SCS-1V-2-5">1 vCPU + 2GiB RAM + 5GB Disk (SCS-1V-2-5)</SelectItem>
+                              <SelectItem value="SCS-1V-4">1 vCPU +4GiB RAM (SCS-1V-4)</SelectItem>
+                              <SelectItem value="SCS-1V-4-10">1 vCPU + 4GiB RAM + 10GB Disk (SCS-1V-4-10)</SelectItem>
+                              <SelectItem value="SCS-1V-8">1 vCPU + 8GiB RAM (SCS-1V-8)</SelectItem>
+                              <SelectItem value="SCS-1V-8-20">1 vCPU + 8GiB RAM + 20GB Disk(SCS-1V-8-20)</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>2 vCPU</SelectLabel>
+                              <SelectItem value="SCS-2V-4">2 vCPU + 4GiB RAM (SCS-2V-4)</SelectItem>
+                              <SelectItem value="SCS-2V-4-10">2 vCPU + 4GiB RAM + 10GB Disk(SCS-2V-4-10)</SelectItem>
+                              <SelectItem value="SCS-2V-4-20s">2 vCPU + 4GiB RAM + 20GB SSD (SCS-2V-4-20s)</SelectItem>
+                              <SelectItem value="SCS-2V-8">2 vCPU + 8GiB RAM (SCS-2V-8)</SelectItem>
+                              <SelectItem value="SCS-2V-8-20">2 vCPU + 8GiB RAM + 20GB Disk (SCS-2V-8-20)</SelectItem>
+                              <SelectItem value="SCS-2V-16">2 vCPU + 16GiB RAM(SCS-2V-16)</SelectItem>
+                              <SelectItem value="SCS-2V-16-50">2 vCPU + 16GiB RAM + 50GB Disk (SCS-2V-16-50)</SelectItem>
+
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>4 vCPU</SelectLabel>
+                              <SelectItem value="SCS-4V-8">4 vCPU + 8GiB RAM (SCS-4V-8)</SelectItem>
+                              <SelectItem value="SCS-4V-8-20">4 vCPU + 8GiB RAM + 20GB Disk (SCS-4V-8-20)</SelectItem>
+                              <SelectItem value="SCS-4V-16">4 vCPU + 16GiB RAM (SCS-4V-16)</SelectItem>
+                              <SelectItem value="SCS-4V-16-50">4 vCPU + 16GiB RAM + 50GB Disk(SCS-4V-16-50)</SelectItem>
+                              <SelectItem value="SCS-4V-16-100s">4 vCPU + 16GiB RAM + 100GB SSD(SCS-4V-16-100s)</SelectItem>
+                              <SelectItem value="SCS-4V-32">4 vCPU + 32GiB RAM (SCS-4V-32)</SelectItem>
+                              <SelectItem value="SCS-4V-32-100">4 vCPU + 32GiB RAM + 100GB Disk (SCS-4V-32-100)</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>8 vCPU</SelectLabel>
+                              <SelectItem value="SCS-8V-32">8 vCPU + 32GiB RAM (SCS-8V-32)</SelectItem>
+                              <SelectItem value="SCS-8V-32-100">8 vCPU + 32GiB RAM + 100GB Disk (SCS-8V-32-100)</SelectItem>
+                              <SelectItem value="SCS-8V-16">8 vCPU + 16GiB RAM (SCS-8V-16)</SelectItem>
+                              <SelectItem value="SCS-8V-16-50">8 vCPU + 16GiB RAM + 50GB Disk (SCS-8V-16-50)</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>16 vCPU</SelectLabel>
+                              <SelectItem value="SCS-16V-32">16 vCPU + 32GiB RAM (SCS-16V-32)</SelectItem>
+                              <SelectItem value="SCS-16V-32-100">16 vCPU + 32GiB RAM + 100GB Disk (SCS-16V-32-100)</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          Choose an instance flavor for your control plane
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="controlplane_replicas"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Control plane replicas</FormLabel>
+                        <FormControl>
+                          <Input type="number" min={1} max={20} {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          How many control plane replicas you want
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="worker_flavor"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-m">Worker Flavor</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>1 vCPU</SelectLabel>
+                              <SelectItem value="SCS-1L-1">1 vCPU + 1GiB RAM (<b>SCS-1L-1</b>)</SelectItem>
+                              <SelectItem value="SCS-1L-1-5">1 vCPU + 1GiB RAM + 5GB Disk (SCS-1L-1-5)</SelectItem>
+                              <SelectItem value="SCS-1V-2">1 vCPU + 2GiB RAM (SCS-1V-2)</SelectItem>
+                              <SelectItem value="SCS-1V-2-5">1 vCPU + 2GiB RAM + 5GB Disk (SCS-1V-2-5)</SelectItem>
+                              <SelectItem value="SCS-1V-4">1 vCPU +4GiB RAM (SCS-1V-4)</SelectItem>
+                              <SelectItem value="SCS-1V-4-10">1 vCPU + 4GiB RAM + 10GB Disk (SCS-1V-4-10)</SelectItem>
+                              <SelectItem value="SCS-1V-8">1 vCPU + 8GiB RAM (SCS-1V-8)</SelectItem>
+                              <SelectItem value="SCS-1V-8-20">1 vCPU + 8GiB RAM + 20GB Disk(SCS-1V-8-20)</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>2 vCPU</SelectLabel>
+                              <SelectItem value="SCS-2V-4">2 vCPU + 4GiB RAM (SCS-2V-4)</SelectItem>
+                              <SelectItem value="SCS-2V-4-10">2 vCPU + 4GiB RAM + 10GB Disk(SCS-2V-4-10)</SelectItem>
+                              <SelectItem value="SCS-2V-4-20s">2 vCPU + 4GiB RAM + 20GB SSD (SCS-2V-4-20s)</SelectItem>
+                              <SelectItem value="SCS-2V-8">2 vCPU + 8GiB RAM (SCS-2V-8)</SelectItem>
+                              <SelectItem value="SCS-2V-8-20">2 vCPU + 8GiB RAM + 20GB Disk (SCS-2V-8-20)</SelectItem>
+                              <SelectItem value="SCS-2V-16">2 vCPU + 16GiB RAM(SCS-2V-16)</SelectItem>
+                              <SelectItem value="SCS-2V-16-50">2 vCPU + 16GiB RAM + 50GB Disk (SCS-2V-16-50)</SelectItem>
+
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>4 vCPU</SelectLabel>
+                              <SelectItem value="SCS-4V-8">4 vCPU + 8GiB RAM (SCS-4V-8)</SelectItem>
+                              <SelectItem value="SCS-4V-8-20">4 vCPU + 8GiB RAM + 20GB Disk (SCS-4V-8-20)</SelectItem>
+                              <SelectItem value="SCS-4V-16">4 vCPU + 16GiB RAM (SCS-4V-16)</SelectItem>
+                              <SelectItem value="SCS-4V-16-50">4 vCPU + 16GiB RAM + 50GB Disk(SCS-4V-16-50)</SelectItem>
+                              <SelectItem value="SCS-4V-16-100s">4 vCPU + 16GiB RAM + 100GB SSD(SCS-4V-16-100s)</SelectItem>
+                              <SelectItem value="SCS-4V-32">4 vCPU + 32GiB RAM (SCS-4V-32)</SelectItem>
+                              <SelectItem value="SCS-4V-32-100">4 vCPU + 32GiB RAM + 100GB Disk (SCS-4V-32-100)</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>8 vCPU</SelectLabel>
+                              <SelectItem value="SCS-8V-32">8 vCPU + 32GiB RAM (SCS-8V-32)</SelectItem>
+                              <SelectItem value="SCS-8V-32-100">8 vCPU + 32GiB RAM + 100GB Disk (SCS-8V-32-100)</SelectItem>
+                              <SelectItem value="SCS-8V-16">8 vCPU + 16GiB RAM (SCS-8V-16)</SelectItem>
+                              <SelectItem value="SCS-8V-16-50">8 vCPU + 16GiB RAM + 50GB Disk (SCS-8V-16-50)</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>16 vCPU</SelectLabel>
+                              <SelectItem value="SCS-16V-32">16 vCPU + 32GiB RAM (SCS-16V-32)</SelectItem>
+                              <SelectItem value="SCS-16V-32-100">16 vCPU + 32GiB RAM + 100GB Disk (SCS-16V-32-100)</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          Choose an instance flavor for your worker nodes
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="worker_replicas"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Worker replicas</FormLabel>
+                        <FormControl>
+                          <Input type="number" min={1} max={20} {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          How many worker replicas you want
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+            <div>
+              <Card className="">
+                <CardHeader>
+                  <CardTitle>Variables</CardTitle>
+                  <CardDescription><Link className={buttonVariants({ variant: "link" })} href="https://github.com/SovereignCloudStack/provider/openstack/alpha/1-30/">Source</Link></CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-4 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="pod_cidr"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Pod CIDRs</FormLabel>
+                        <FormControl>
+                          <Input placeholder="192.168.0.0/16" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          CIDR addresses for all pods in the cluster
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="service_cidr"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Service CIDRs</FormLabel>
+                        <FormControl>
+                          <Input placeholder="10.96.0.0/12" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          CIDR addresses for all services in the cluster
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </div>
             <DownloadButton ready={ready} resource={resource} />
           </form>
         </Form>
@@ -545,7 +589,7 @@ export function ClusterForm() {
         >
           {resource}
         </SyntaxHighlighter>
-      </div>
+      </div >
     </>
   );
 }

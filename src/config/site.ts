@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "Cluster Gen MVP",
+  name: "Cluster Gen",
   url: "https://cluster-gen.moin.k8s.scs.community",
   ogImage: "",
   description: "Generate Cluster objects based on SCS Cluster Stacks",
