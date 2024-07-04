@@ -8,6 +8,8 @@ import {
 } from "@/components/page-header";
 
 import { ClusterForm } from "@/components/cluster-form";
+import { parser } from "@/lib/parser";
+
 
 async function getClusterClasses() {
   const res = await fetch(
@@ -22,8 +24,10 @@ async function getClusterClasses() {
 }
 
 export default async function IndexPage() {
+
   const data = await getClusterClasses();
   const ccs = data?.items;
+  const out = parser({ ccs })
 
   return (
     <div className="container relative">
@@ -34,7 +38,7 @@ export default async function IndexPage() {
         </PageHeaderDescription>
         <PageActions>
           <div className="mt-14">
-            <ClusterForm ccs={ccs} />
+            <ClusterForm ccs={out} />
           </div>
         </PageActions>
       </PageHeader>

@@ -38,14 +38,13 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button"
 
+import { KubernetesVersions } from "@/components/k8s-selector"
+
 import Link from "next/link";
 
 import type { ClusterClass } from "@/types/clusterclass.type";
-import { parser } from "@/lib/parser";
 
 export const ClusterForm = ({ ccs }: { ccs: Array<ClusterClass> }) => {
-
-  const out = parser({ ccs })
 
   const FormSchema = z.object({
     cluster_name: z.string().min(2, {
@@ -137,11 +136,18 @@ export const ClusterForm = ({ ccs }: { ccs: Array<ClusterClass> }) => {
     '          name: ' + form.watch("clusterstack") + '\n' +
     '          replicas: ' + form.watch("worker_replicas")
 
-  const k8s_versions = [{
-    "1.30": ["1.30.2", "1.30.1", "1.30.0"],
-    "1.29": ["1.29.6", "1.29.5", "1.29.4", "1.29.3", "1.29.2", "1.29.1" + "1.29.0"],
-    "1.28": ["1.28.11", "1.28.10", "1.28.9", "1.28.8", "1.28.7", "1.28.6", "1.28.5", "1.28.4", "1.28.3", "1.28.2", "1.28.1", "1.28.0"]
-  }]
+  const k8s_versions = new Map([
+    ["1.30", ["1.30.2", "1.30.1", "1.30.0"]],
+    ["1.29", ["1.29.6", "1.29.5", "1.29.4", "1.29.3", "1.29.2", "1.29.1" + "1.29.0"]],
+    ["1.28", ["1.28.11", "1.28.10", "1.28.9", "1.28.8", "1.28.7", "1.28.6", "1.28.5", "1.28.4", "1.28.3", "1.28.2", "1.28.1", "1.28.0"]]
+  ])
+
+  const options = () => {
+    k8s_versions.forEach(function (element, index, array) {
+      console.log(index, typeof (array))
+    })
+    return "lol"
+  }
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(resource)
@@ -265,82 +271,7 @@ export const ClusterForm = ({ ccs }: { ccs: Array<ClusterClass> }) => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>1.30</SelectLabel>
-                              <SelectItem value="1.30.2">
-                                1.30.2
-                              </SelectItem>
-                              <SelectItem value="1.30.1">
-                                1.30.1
-                              </SelectItem>
-                              <SelectItem value="1.30.0">
-                                1.30.0
-                              </SelectItem>
-                            </SelectGroup>
-
-                            <SelectGroup>
-                              <SelectLabel>1.29</SelectLabel>
-                              <SelectItem value="1.29.6">
-                                1.29.6
-                              </SelectItem>
-                              <SelectItem value="1.29.5">
-                                1.29.5
-                              </SelectItem>
-                              <SelectItem value="1.29.4">
-                                1.29.4
-                              </SelectItem>
-                              <SelectItem value="1.29.3">
-                                1.29.3
-                              </SelectItem>
-                              <SelectItem value="1.29.2">
-                                1.29.2
-                              </SelectItem>
-                              <SelectItem value="1.29.1">
-                                1.29.1
-                              </SelectItem>
-                              <SelectItem value="1.29.0">
-                                1.29.0
-                              </SelectItem>
-                            </SelectGroup>
-                            <SelectGroup>
-                              <SelectLabel>1.28</SelectLabel>
-                              <SelectItem value="1.28.11">
-                                1.28.11
-                              </SelectItem>
-                              <SelectItem value="1.28.10">
-                                1.28.10
-                              </SelectItem>
-                              <SelectItem value="1.28.9">
-                                1.28.9
-                              </SelectItem>
-                              <SelectItem value="1.28.8">
-                                1.28.8
-                              </SelectItem>
-                              <SelectItem value="1.28.7">
-                                1.28.7
-                              </SelectItem>
-                              <SelectItem value="1.28.6">
-                                1.28.6
-                              </SelectItem>
-                              <SelectItem value="1.28.5">
-                                1.28.5
-                              </SelectItem>
-                              <SelectItem value="1.28.4">
-                                1.28.4
-                              </SelectItem>
-                              <SelectItem value="1.28.3">
-                                1.28.3
-                              </SelectItem>
-                              <SelectItem value="1.28.2">
-                                1.28.2
-                              </SelectItem>
-                              <SelectItem value="1.28.1">
-                                1.28.1
-                              </SelectItem>
-                              <SelectItem value="1.28.0">
-                                1.28.0
-                              </SelectItem>
-                            </SelectGroup>
+                            <KubernetesVersions k8s_versions={k8s_versions} />
                           </SelectContent>
                         </Select>
                         <FormDescription>
@@ -528,7 +459,9 @@ export const ClusterForm = ({ ccs }: { ccs: Array<ClusterClass> }) => {
               <Card className="">
                 <CardHeader>
                   <CardTitle>Variables</CardTitle>
-                  <CardDescription><Link className={buttonVariants({ variant: "link" })} href="https://github.com/SovereignCloudStack/provider/openstack/alpha/1-30/">Source</Link></CardDescription>
+                  <CardDescription>
+                    {/* <Link className={buttonVariants({ variant: "link" })} href="https://github.com/SovereignCloudStack/provider/openstack/alpha/1-30/">Source</Link> */}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="grid grid-cols-4 gap-4">
                   <FormField
@@ -563,6 +496,8 @@ export const ClusterForm = ({ ccs }: { ccs: Array<ClusterClass> }) => {
                       </FormItem>
                     )}
                   />
+                  <ul>
+                  </ul>
                 </CardContent>
               </Card>
             </div>

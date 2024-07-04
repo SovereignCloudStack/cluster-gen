@@ -8,5 +8,5 @@ export const parser = ({ ccs }: any) => {
         return acc;
     }, []);
 
-    return unique
+    return ccs
 }
