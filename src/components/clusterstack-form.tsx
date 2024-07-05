@@ -69,7 +69,6 @@ export function ClusterStackForm() {
     '  name: ' + form.watch("clusterstack").split("-")[1] + '\n' +
     '  kubernetesVersion: ' + '"' + kubernetesVersion + '"' + '\n' +
     '  channel: ' + "stable" + '\n' +
-    '  autoSubscribe: ' + "false" + '\n' +
     '  providerRef:\n' +
     '    apiVersion: ' + "infrastructure.clusterstack.x-k8s.io/v1alph1" + '\n' +
     '    kind: ' + "OpenStackClusterStackReleaseTemplate" + '\n' +

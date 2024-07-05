@@ -73,8 +73,8 @@ export function ClusterForm() {
       cluster_name: "",
       namespace: "",
       kubernetes_version: "1.29.3",
-      controller_flavor: "SCS-2V-4-50",
-      worker_flavor: "SCS-2V-4-50",
+      controller_flavor: "SCS-4V-8-20",
+      worker_flavor: "SCS-4V-8-20",
       external_id: "ebfe5546-f09f-4f42-ab54-094e457d42ec",
       pod_cidr: "192.168.0.0/16",
       service_cidr: "10.96.0.0/12",
@@ -336,7 +336,7 @@ export function ClusterForm() {
               name="controller_flavor"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-m">Controller Flavor</FormLabel>
+                  <FormLabel className="text-m">Controller Flavor <span className='border-2 rounded-3xl bg-gray-200 text-black px-2' title="SCS-( CPU )-( RAM[GiB] )-( DISK[GB] )">i</span></FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -344,19 +344,44 @@ export function ClusterForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="SCS-2V-4-50">
-                        SCS-2V-4-50
-                      </SelectItem>
-                      <SelectItem value="SCS-4V-8-20">
-                        SCS-4V-8-20
-                      </SelectItem>
-                      <SelectItem value="SCS-8V-16-50">
-                        SCS-8V-16-50
-                      </SelectItem>
+                      <SelectGroup>
+                        <SelectLabel>vCPU (oversubscribed)</SelectLabel>
+                        <SelectItem value="SCS-1V-4">CPU: 1, RAM: 4GiB (SCS-1V-4)</SelectItem>
+                        <SelectItem value="SCS-2V-8">CPU: 2, RAM: 8GiB (SCS-2V-8)</SelectItem>
+                        <SelectItem value="SCS-4V-16">CPU: 4, RAM: 16GiB (SCS-4V-16)</SelectItem>
+                        <SelectItem value="SCS-8V-32">CPU: 8, RAM: 32GiB (SCS-8V-32)</SelectItem>
+                        <SelectItem value="SCS-1V-2">CPU: 1, RAM: 2GiB (SCS-1V-2)</SelectItem>
+                        <SelectItem value="SCS-2V-4">CPU: 2, RAM: 4GiB (SCS-2V-4)</SelectItem>
+                        <SelectItem value="SCS-4V-8">CPU: 4, RAM: 8GiB (SCS-4V-8)</SelectItem>
+                        <SelectItem value="SCS-8V-16">CPU: 8, RAM: 16GiB (SCS-8V-16)</SelectItem>
+                        <SelectItem value="SCS-16V-32">CPU: 16, RAM: 32GiB (SCS-16V-32)</SelectItem>
+                        <SelectItem value="SCS-1V-8">CPU: 1, RAM: 8GiB (SCS-1V-8)</SelectItem>
+                        <SelectItem value="SCS-2V-16">CPU: 2, RAM: 16GiB (SCS-2V-16)</SelectItem>
+                        <SelectItem value="SCS-4V-32">CPU: 4, RAM: 32GiB (SCS-4V-32)</SelectItem>
+                        <SelectItem value="SCS-2V-4-20s">CPU: 2, RAM: 4GiB (SCS-2V-4-20s)</SelectItem>
+                        <SelectItem value="SCS-4V-16-100s">CPU: 4, RAM: 16GiB (SCS-4V-16-100s)</SelectItem>
+                        <SelectItem value="SCS-1V-4-10">CPU: 1, RAM: 4GiB (SCS-1V-4-10)</SelectItem>
+                        <SelectItem value="SCS-2V-8-20">CPU: 2, RAM: 8GiB (SCS-2V-8-20)</SelectItem>
+                        <SelectItem value="SCS-4V-16-50">CPU: 4, RAM: 16GiB (SCS-4V-16-50)</SelectItem>
+                        <SelectItem value="SCS-8V-32-100">CPU: 8, RAM: 32GiB (SCS-8V-32-100)</SelectItem>
+                        <SelectItem value="SCS-1V-2-5">CPU: 1, RAM: 2GiB (SCS-1V-2-5)</SelectItem>
+                        <SelectItem value="SCS-2V-4-10">CPU: 2, RAM: 4GiB (SCS-2V-4-10)</SelectItem>
+                        <SelectItem value="SCS-4V-8-20">CPU: 4, RAM: 8GiB (SCS-4V-8-20)</SelectItem>
+                        <SelectItem value="SCS-8V-16-50">CPU: 8, RAM: 16GiB (SCS-8V-16-50)</SelectItem>
+                        <SelectItem value="SCS-16V-32-100">CPU: 16, RAM: 32GiB (SCS-16V-32-100)</SelectItem>
+                        <SelectItem value="SCS-1V-8-20">CPU: 1, RAM: 8GiB (SCS-1V-8-20)</SelectItem>
+                        <SelectItem value="SCS-2V-16-50">CPU: 2, RAM: 16GiB (SCS-2V-16-50)</SelectItem>
+                        <SelectItem value="SCS-4V-32-100">CPU: 4, RAM: 32GiB (SCS-4V-32-100)</SelectItem>
+                      </SelectGroup>
+                      <SelectGroup>
+                        <SelectLabel>vCPU (heavily oversubscribed)</SelectLabel>
+                        <SelectItem value="SCS-1L-1">CPU: 1, RAM: 1GiB (SCS-1L-1)</SelectItem>
+                        <SelectItem value="SCS-1L-1-5">CPU: 1, RAM: 1GiB (SCS-1L-1-5)</SelectItem>
+                      </SelectGroup>
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    Choose an instance flavor for your control plane
+                    <p>Choose an instance flavor for your control plane</p>
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -383,7 +408,7 @@ export function ClusterForm() {
               name="worker_flavor"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-m">Worker Flavor</FormLabel>
+                  <FormLabel className="text-m">Worker Flavor <span className='border-2 rounded-3xl bg-gray-200 text-black px-2' title="SCS-( CPU )-( RAM[GiB] )-( DISK[GB] )">i</span></FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -391,15 +416,40 @@ export function ClusterForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="SCS-2V-4-50">
-                        SCS-2V-4-50
-                      </SelectItem>
-                      <SelectItem value="SCS-4V-8-20">
-                        SCS-4V-8-20
-                      </SelectItem>
-                      <SelectItem value="SCS-8V-16-50">
-                        SCS-8V-16-50
-                      </SelectItem>
+                      <SelectGroup>
+                        <SelectLabel>vCPU (oversubscribed)</SelectLabel>
+                        <SelectItem value="SCS-1V-4">CPU: 1, RAM: 4GiB (SCS-1V-4)</SelectItem>
+                        <SelectItem value="SCS-2V-8">CPU: 2, RAM: 8GiB (SCS-2V-8)</SelectItem>
+                        <SelectItem value="SCS-4V-16">CPU: 4, RAM: 16GiB (SCS-4V-16)</SelectItem>
+                        <SelectItem value="SCS-8V-32">CPU: 8, RAM: 32GiB (SCS-8V-32)</SelectItem>
+                        <SelectItem value="SCS-1V-2">CPU: 1, RAM: 2GiB (SCS-1V-2)</SelectItem>
+                        <SelectItem value="SCS-2V-4">CPU: 2, RAM: 4GiB (SCS-2V-4)</SelectItem>
+                        <SelectItem value="SCS-4V-8">CPU: 4, RAM: 8GiB (SCS-4V-8)</SelectItem>
+                        <SelectItem value="SCS-8V-16">CPU: 8, RAM: 16GiB (SCS-8V-16)</SelectItem>
+                        <SelectItem value="SCS-16V-32">CPU: 16, RAM: 32GiB (SCS-16V-32)</SelectItem>
+                        <SelectItem value="SCS-1V-8">CPU: 1, RAM: 8GiB (SCS-1V-8)</SelectItem>
+                        <SelectItem value="SCS-2V-16">CPU: 2, RAM: 16GiB (SCS-2V-16)</SelectItem>
+                        <SelectItem value="SCS-4V-32">CPU: 4, RAM: 32GiB (SCS-4V-32)</SelectItem>
+                        <SelectItem value="SCS-2V-4-20s">CPU: 2, RAM: 4GiB (SCS-2V-4-20s)</SelectItem>
+                        <SelectItem value="SCS-4V-16-100s">CPU: 4, RAM: 16GiB (SCS-4V-16-100s)</SelectItem>
+                        <SelectItem value="SCS-1V-4-10">CPU: 1, RAM: 4GiB (SCS-1V-4-10)</SelectItem>
+                        <SelectItem value="SCS-2V-8-20">CPU: 2, RAM: 8GiB (SCS-2V-8-20)</SelectItem>
+                        <SelectItem value="SCS-4V-16-50">CPU: 4, RAM: 16GiB (SCS-4V-16-50)</SelectItem>
+                        <SelectItem value="SCS-8V-32-100">CPU: 8, RAM: 32GiB (SCS-8V-32-100)</SelectItem>
+                        <SelectItem value="SCS-1V-2-5">CPU: 1, RAM: 2GiB (SCS-1V-2-5)</SelectItem>
+                        <SelectItem value="SCS-2V-4-10">CPU: 2, RAM: 4GiB (SCS-2V-4-10)</SelectItem>
+                        <SelectItem value="SCS-4V-8-20">CPU: 4, RAM: 8GiB (SCS-4V-8-20)</SelectItem>
+                        <SelectItem value="SCS-8V-16-50">CPU: 8, RAM: 16GiB (SCS-8V-16-50)</SelectItem>
+                        <SelectItem value="SCS-16V-32-100">CPU: 16, RAM: 32GiB (SCS-16V-32-100)</SelectItem>
+                        <SelectItem value="SCS-1V-8-20">CPU: 1, RAM: 8GiB (SCS-1V-8-20)</SelectItem>
+                        <SelectItem value="SCS-2V-16-50">CPU: 2, RAM: 16GiB (SCS-2V-16-50)</SelectItem>
+                        <SelectItem value="SCS-4V-32-100">CPU: 4, RAM: 32GiB (SCS-4V-32-100)</SelectItem>
+                      </SelectGroup>
+                      <SelectGroup>
+                        <SelectLabel>vCPU (heavily oversubscribed)</SelectLabel>
+                        <SelectItem value="SCS-1L-1">CPU: 1, RAM: 1GiB (SCS-1L-1)</SelectItem>
+                        <SelectItem value="SCS-1L-1-5">CPU: 1, RAM: 1GiB (SCS-1L-1-5)</SelectItem>
+                      </SelectGroup>
                     </SelectContent>
                   </Select>
                   <FormDescription>
