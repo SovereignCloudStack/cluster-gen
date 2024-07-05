@@ -13,6 +13,7 @@ jobs:
         with:
           files: ${{ github.workspace }}
           generate_release_notes: true
+          append_body: true
           make_latest: true
   build:
     runs-on: ubuntu-latest
