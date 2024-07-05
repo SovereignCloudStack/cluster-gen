@@ -1,31 +1,24 @@
-# get latest tag
-# create github release
-# build container
-# push the docker image to registry.scs.community
-
-name: release-builder
+name: release-and-build
 on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
 jobs:
-  tag:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Get latest tag
-        id: vars
-        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
-      - name: Check output
-        env:
-          LATEST_RELEASE: ${{ steps.vars.outputs.tag }}
-        run: |
-          echo $LATEST_RELEASE
+      - uses: actions/checkout@v4
       - name: Release
         uses: softprops/action-gh-release@v2
-  build-container:
+        with:
+          files: ${{ github.workspace }}
+          make_latest: true
+  build:
     runs-on: ubuntu-latest
     container: docker
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t cluster-gen .
+        name: Build docker image
+      - run: |
+          docker build -t cluster-gen .
+          docker login registry.scs.community -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_TOKEN }}
