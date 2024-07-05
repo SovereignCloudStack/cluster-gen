@@ -13,14 +13,14 @@ jobs:
         with:
           files: ${{ github.workspace }}
           generate_release_notes: true
-          append_body: true
           make_latest: true
   build:
     runs-on: ubuntu-latest
     container: docker
     steps:
       - uses: actions/checkout@v4
-        name: Build docker image
+        name: Build and push docker image
       - run: |
-          docker build -t cluster-gen .
+          docker build . -t registry.scs.community/cluster-gen/cluster-gen:${{ github.ref_name }}
           docker login registry.scs.community -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_TOKEN }}
+          docker push registry.scs.community/cluster-gen/cluster-gen:${{ github.ref_name }}
