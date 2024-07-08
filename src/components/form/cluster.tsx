@@ -39,6 +39,7 @@ import { useState } from "react";
 import { MultiInput } from "@/components/multi-input"
 
 export const ClusterForm = (schema: Object) => {
+  const [formData, setFormData] = useState(null);
   const [values, setValues] = useState<string[]>([])
   const out = stringify(schema)
   console.log(out)
@@ -52,17 +53,20 @@ export const ClusterForm = (schema: Object) => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <pre>{JSON.stringify(schema.schema, null, 2)}</pre>
                 <Form
                   schema={schema.schema}
                   validator={validator}
                   widgets={widgets}
+                  formData={formData}
+                  onChange={(e) => setFormData(e.formData)}
                 />
                 <MultiInput value={values} onChange={setValues} />
+
 
               </div>
             </CardContent>
           </Card>
+          <pre>{JSON.stringify(formData, null, 2)}</pre>
         </div>
       </div >
     </>
