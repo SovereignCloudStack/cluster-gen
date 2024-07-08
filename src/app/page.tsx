@@ -1,4 +1,7 @@
-export const revalidate = 900; // revalidate at most every 15mins
+
+export const revalidate = 900; // revalidate every 15mins
+
+import { promises as fs } from 'fs';
 
 import {
   PageActions,
@@ -7,27 +10,12 @@ import {
   PageHeaderHeading,
 } from "@/components/page-header";
 
-import { ClusterForm } from "@/components/cluster-form";
-import { parser } from "@/lib/parser";
-
-
-async function getClusterClasses() {
-  const res = await fetch(
-    "https://moin.k8s.scs.community/apis/cluster.x-k8s.io/v1beta1/clusterclasses",
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
-}
+import { ClusterForm } from "@/components/form/cluster";
 
 export default async function IndexPage() {
 
-  const data = await getClusterClasses();
-  const ccs = data?.items;
-  const out = parser({ ccs })
+  const file = await fs.readFile(process.cwd() + "/public/clusterschema.json", 'utf8');
+  const schema = JSON.parse(file);
 
   return (
     <div className="container relative">
@@ -37,8 +25,8 @@ export default async function IndexPage() {
           Generate Cluster objects based on SCS Cluster Stacks
         </PageHeaderDescription>
         <PageActions>
-          <div className="mt-14">
-            <ClusterForm ccs={out} />
+          <div className="mt-8">
+            <ClusterForm schema={schema} />
           </div>
         </PageActions>
       </PageHeader>

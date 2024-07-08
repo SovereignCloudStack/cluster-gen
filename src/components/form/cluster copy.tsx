@@ -5,6 +5,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
+import { Separator } from "@/components/ui/separator"
+
 import {
   Form,
   FormControl,
@@ -25,7 +27,7 @@ import {
   SelectLabel,
 } from "@/components/ui/select";
 
-import { DownloadButton } from '@/components/download-button';
+import { DownloadButton } from '@/components/form/download-button';
 import {
   Card,
   CardContent,
@@ -34,18 +36,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button";
-import { buttonVariants } from "@/components/ui/button"
 
-import { KubernetesVersions } from "@/components/k8s-selector"
+import { widgets } from "@/components/form/widgets"
+import validator from '@rjsf/validator-ajv8';
 
-import Link from "next/link";
-
-import type { ClusterClass } from "@/types/clusterclass.type";
-
-export const ClusterForm = ({ ccs }: { ccs: Array<ClusterClass> }) => {
-
+export const ClusterForm = (schema: Object) => {
+  console.log(schema)
   const FormSchema = z.object({
     cluster_name: z.string().min(2, {
       message: "Cluster name must be at least 2 characters.",
@@ -161,7 +157,7 @@ export const ClusterForm = ({ ccs }: { ccs: Array<ClusterClass> }) => {
             <div className="grid grid-row-cols grid-cols-2 gap-4 mb-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Cluster</CardTitle>
+                  <CardTitle className="">Cluster</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -271,7 +267,6 @@ export const ClusterForm = ({ ccs }: { ccs: Array<ClusterClass> }) => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <KubernetesVersions k8s_versions={k8s_versions} />
                           </SelectContent>
                         </Select>
                         <FormDescription>
@@ -285,175 +280,188 @@ export const ClusterForm = ({ ccs }: { ccs: Array<ClusterClass> }) => {
               </Card>
               <Card className="">
                 <CardHeader>
-                  <CardTitle>Machines</CardTitle>
+                  <CardTitle className="">Machines</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="controller_flavor"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-m">Controller Flavor</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>1 vCPU</SelectLabel>
-                              <SelectItem value="SCS-1L-1">1 vCPU + 1GiB RAM (SCS-1L-1)</SelectItem>
-                              <SelectItem value="SCS-1L-1-5">1 vCPU + 1GiB RAM + 5GB Disk (SCS-1L-1-5)</SelectItem>
-                              <SelectItem value="SCS-1V-2">1 vCPU + 2GiB RAM (SCS-1V-2)</SelectItem>
-                              <SelectItem value="SCS-1V-2-5">1 vCPU + 2GiB RAM + 5GB Disk (SCS-1V-2-5)</SelectItem>
-                              <SelectItem value="SCS-1V-4">1 vCPU +4GiB RAM (SCS-1V-4)</SelectItem>
-                              <SelectItem value="SCS-1V-4-10">1 vCPU + 4GiB RAM + 10GB Disk (SCS-1V-4-10)</SelectItem>
-                              <SelectItem value="SCS-1V-8">1 vCPU + 8GiB RAM (SCS-1V-8)</SelectItem>
-                              <SelectItem value="SCS-1V-8-20">1 vCPU + 8GiB RAM + 20GB Disk(SCS-1V-8-20)</SelectItem>
-                            </SelectGroup>
-                            <SelectGroup>
-                              <SelectLabel>2 vCPU</SelectLabel>
-                              <SelectItem value="SCS-2V-4">2 vCPU + 4GiB RAM (SCS-2V-4)</SelectItem>
-                              <SelectItem value="SCS-2V-4-10">2 vCPU + 4GiB RAM + 10GB Disk(SCS-2V-4-10)</SelectItem>
-                              <SelectItem value="SCS-2V-4-20s">2 vCPU + 4GiB RAM + 20GB SSD (SCS-2V-4-20s)</SelectItem>
-                              <SelectItem value="SCS-2V-8">2 vCPU + 8GiB RAM (SCS-2V-8)</SelectItem>
-                              <SelectItem value="SCS-2V-8-20">2 vCPU + 8GiB RAM + 20GB Disk (SCS-2V-8-20)</SelectItem>
-                              <SelectItem value="SCS-2V-16">2 vCPU + 16GiB RAM(SCS-2V-16)</SelectItem>
-                              <SelectItem value="SCS-2V-16-50">2 vCPU + 16GiB RAM + 50GB Disk (SCS-2V-16-50)</SelectItem>
+                  <div className="flex flex-row gap-4">
+                    <div className="basis-3/4">
+                      <FormField
+                        control={form.control}
+                        name="controller_flavor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-m">Controller Flavor</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>1 vCPU</SelectLabel>
+                                  <SelectItem value="SCS-1L-1">1 vCPU + 1GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-1L-1-5">1 vCPU + 1GiB RAM + 5GB Disk</SelectItem>
+                                  <SelectItem value="SCS-1V-2">1 vCPU + 2GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-1V-2-5">1 vCPU + 2GiB RAM + 5GB Disk</SelectItem>
+                                  <SelectItem value="SCS-1V-4">1 vCPU +4GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-1V-4-10">1 vCPU + 4GiB RAM + 10GB Disk</SelectItem>
+                                  <SelectItem value="SCS-1V-8">1 vCPU + 8GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-1V-8-20">1 vCPU + 8GiB RAM + 20GB Disk</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                  <SelectLabel>2 vCPU</SelectLabel>
+                                  <SelectItem value="SCS-2V-4">2 vCPU + 4GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-2V-4-10">2 vCPU + 4GiB RAM + 10GB Disk</SelectItem>
+                                  <SelectItem value="SCS-2V-4-20s">2 vCPU + 4GiB RAM + 20GB SSD</SelectItem>
+                                  <SelectItem value="SCS-2V-8">2 vCPU + 8GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-2V-8-20">2 vCPU + 8GiB RAM + 20GB Disk</SelectItem>
+                                  <SelectItem value="SCS-2V-16">2 vCPU + 16GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-2V-16-50">2 vCPU + 16GiB RAM + 50GB Disk</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                  <SelectLabel>4 vCPU</SelectLabel>
+                                  <SelectItem value="SCS-4V-8">4 vCPU + 8GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-4V-8-20">4 vCPU + 8GiB RAM + 20GB Disk</SelectItem>
+                                  <SelectItem value="SCS-4V-16">4 vCPU + 16GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-4V-16-50">4 vCPU + 16GiB RAM + 50GB Disk</SelectItem>
+                                  <SelectItem value="SCS-4V-16-100s">4 vCPU + 16GiB RAM + 100GB SSD</SelectItem>
+                                  <SelectItem value="SCS-4V-32">4 vCPU + 32GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-4V-32-100">4 vCPU + 32GiB RAM + 100GB Disk</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                  <SelectLabel>8 vCPU</SelectLabel>
+                                  <SelectItem value="SCS-8V-32">8 vCPU + 32GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-8V-32-100">8 vCPU + 32GiB RAM + 100GB Disk</SelectItem>
+                                  <SelectItem value="SCS-8V-16">8 vCPU + 16GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-8V-16-50">8 vCPU + 16GiB RAM + 50GB Disk</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                  <SelectLabel>16 vCPU</SelectLabel>
+                                  <SelectItem value="SCS-16V-32">16 vCPU + 32GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-16V-32-100">16 vCPU + 32GiB RAM + 100GB Disk</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Instance flavor of your control plane
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="basis-1/4">
+                      <FormField
+                        control={form.control}
+                        name="controlplane_replicas"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Replicas</FormLabel>
+                            <FormControl>
+                              <Input type="number" min={1} max={20} {...field} />
+                            </FormControl>
+                            <FormDescription>
 
-                            </SelectGroup>
-                            <SelectGroup>
-                              <SelectLabel>4 vCPU</SelectLabel>
-                              <SelectItem value="SCS-4V-8">4 vCPU + 8GiB RAM (SCS-4V-8)</SelectItem>
-                              <SelectItem value="SCS-4V-8-20">4 vCPU + 8GiB RAM + 20GB Disk (SCS-4V-8-20)</SelectItem>
-                              <SelectItem value="SCS-4V-16">4 vCPU + 16GiB RAM (SCS-4V-16)</SelectItem>
-                              <SelectItem value="SCS-4V-16-50">4 vCPU + 16GiB RAM + 50GB Disk(SCS-4V-16-50)</SelectItem>
-                              <SelectItem value="SCS-4V-16-100s">4 vCPU + 16GiB RAM + 100GB SSD(SCS-4V-16-100s)</SelectItem>
-                              <SelectItem value="SCS-4V-32">4 vCPU + 32GiB RAM (SCS-4V-32)</SelectItem>
-                              <SelectItem value="SCS-4V-32-100">4 vCPU + 32GiB RAM + 100GB Disk (SCS-4V-32-100)</SelectItem>
-                            </SelectGroup>
-                            <SelectGroup>
-                              <SelectLabel>8 vCPU</SelectLabel>
-                              <SelectItem value="SCS-8V-32">8 vCPU + 32GiB RAM (SCS-8V-32)</SelectItem>
-                              <SelectItem value="SCS-8V-32-100">8 vCPU + 32GiB RAM + 100GB Disk (SCS-8V-32-100)</SelectItem>
-                              <SelectItem value="SCS-8V-16">8 vCPU + 16GiB RAM (SCS-8V-16)</SelectItem>
-                              <SelectItem value="SCS-8V-16-50">8 vCPU + 16GiB RAM + 50GB Disk (SCS-8V-16-50)</SelectItem>
-                            </SelectGroup>
-                            <SelectGroup>
-                              <SelectLabel>16 vCPU</SelectLabel>
-                              <SelectItem value="SCS-16V-32">16 vCPU + 32GiB RAM (SCS-16V-32)</SelectItem>
-                              <SelectItem value="SCS-16V-32-100">16 vCPU + 32GiB RAM + 100GB Disk (SCS-16V-32-100)</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          Choose an instance flavor for your control plane
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="controlplane_replicas"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Control plane replicas</FormLabel>
-                        <FormControl>
-                          <Input type="number" min={1} max={20} {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          How many control plane replicas you want
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="worker_flavor"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-m">Worker Flavor</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>1 vCPU</SelectLabel>
-                              <SelectItem value="SCS-1L-1">1 vCPU + 1GiB RAM (<b>SCS-1L-1</b>)</SelectItem>
-                              <SelectItem value="SCS-1L-1-5">1 vCPU + 1GiB RAM + 5GB Disk (SCS-1L-1-5)</SelectItem>
-                              <SelectItem value="SCS-1V-2">1 vCPU + 2GiB RAM (SCS-1V-2)</SelectItem>
-                              <SelectItem value="SCS-1V-2-5">1 vCPU + 2GiB RAM + 5GB Disk (SCS-1V-2-5)</SelectItem>
-                              <SelectItem value="SCS-1V-4">1 vCPU +4GiB RAM (SCS-1V-4)</SelectItem>
-                              <SelectItem value="SCS-1V-4-10">1 vCPU + 4GiB RAM + 10GB Disk (SCS-1V-4-10)</SelectItem>
-                              <SelectItem value="SCS-1V-8">1 vCPU + 8GiB RAM (SCS-1V-8)</SelectItem>
-                              <SelectItem value="SCS-1V-8-20">1 vCPU + 8GiB RAM + 20GB Disk(SCS-1V-8-20)</SelectItem>
-                            </SelectGroup>
-                            <SelectGroup>
-                              <SelectLabel>2 vCPU</SelectLabel>
-                              <SelectItem value="SCS-2V-4">2 vCPU + 4GiB RAM (SCS-2V-4)</SelectItem>
-                              <SelectItem value="SCS-2V-4-10">2 vCPU + 4GiB RAM + 10GB Disk(SCS-2V-4-10)</SelectItem>
-                              <SelectItem value="SCS-2V-4-20s">2 vCPU + 4GiB RAM + 20GB SSD (SCS-2V-4-20s)</SelectItem>
-                              <SelectItem value="SCS-2V-8">2 vCPU + 8GiB RAM (SCS-2V-8)</SelectItem>
-                              <SelectItem value="SCS-2V-8-20">2 vCPU + 8GiB RAM + 20GB Disk (SCS-2V-8-20)</SelectItem>
-                              <SelectItem value="SCS-2V-16">2 vCPU + 16GiB RAM(SCS-2V-16)</SelectItem>
-                              <SelectItem value="SCS-2V-16-50">2 vCPU + 16GiB RAM + 50GB Disk (SCS-2V-16-50)</SelectItem>
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex flex-row gap-4">
+                    <div className="basis-3/4">
+                      <FormField
+                        control={form.control}
+                        name="worker_flavor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-m">Worker Flavor</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>1 vCPU</SelectLabel>
+                                  <SelectItem value="SCS-1L-1">1 vCPU + 1GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-1L-1-5">1 vCPU + 1GiB RAM + 5GB Disk</SelectItem>
+                                  <SelectItem value="SCS-1V-2">1 vCPU + 2GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-1V-2-5">1 vCPU + 2GiB RAM + 5GB Disk</SelectItem>
+                                  <SelectItem value="SCS-1V-4">1 vCPU +4GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-1V-4-10">1 vCPU + 4GiB RAM + 10GB Disk</SelectItem>
+                                  <SelectItem value="SCS-1V-8">1 vCPU + 8GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-1V-8-20">1 vCPU + 8GiB RAM + 20GB Disk</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                  <SelectLabel>2 vCPU</SelectLabel>
+                                  <SelectItem value="SCS-2V-4">2 vCPU + 4GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-2V-4-10">2 vCPU + 4GiB RAM + 10GB Disk</SelectItem>
+                                  <SelectItem value="SCS-2V-4-20s">2 vCPU + 4GiB RAM + 20GB SSD</SelectItem>
+                                  <SelectItem value="SCS-2V-8">2 vCPU + 8GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-2V-8-20">2 vCPU + 8GiB RAM + 20GB Disk</SelectItem>
+                                  <SelectItem value="SCS-2V-16">2 vCPU + 16GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-2V-16-50">2 vCPU + 16GiB RAM + 50GB Disk</SelectItem>
 
-                            </SelectGroup>
-                            <SelectGroup>
-                              <SelectLabel>4 vCPU</SelectLabel>
-                              <SelectItem value="SCS-4V-8">4 vCPU + 8GiB RAM (SCS-4V-8)</SelectItem>
-                              <SelectItem value="SCS-4V-8-20">4 vCPU + 8GiB RAM + 20GB Disk (SCS-4V-8-20)</SelectItem>
-                              <SelectItem value="SCS-4V-16">4 vCPU + 16GiB RAM (SCS-4V-16)</SelectItem>
-                              <SelectItem value="SCS-4V-16-50">4 vCPU + 16GiB RAM + 50GB Disk(SCS-4V-16-50)</SelectItem>
-                              <SelectItem value="SCS-4V-16-100s">4 vCPU + 16GiB RAM + 100GB SSD(SCS-4V-16-100s)</SelectItem>
-                              <SelectItem value="SCS-4V-32">4 vCPU + 32GiB RAM (SCS-4V-32)</SelectItem>
-                              <SelectItem value="SCS-4V-32-100">4 vCPU + 32GiB RAM + 100GB Disk (SCS-4V-32-100)</SelectItem>
-                            </SelectGroup>
-                            <SelectGroup>
-                              <SelectLabel>8 vCPU</SelectLabel>
-                              <SelectItem value="SCS-8V-32">8 vCPU + 32GiB RAM (SCS-8V-32)</SelectItem>
-                              <SelectItem value="SCS-8V-32-100">8 vCPU + 32GiB RAM + 100GB Disk (SCS-8V-32-100)</SelectItem>
-                              <SelectItem value="SCS-8V-16">8 vCPU + 16GiB RAM (SCS-8V-16)</SelectItem>
-                              <SelectItem value="SCS-8V-16-50">8 vCPU + 16GiB RAM + 50GB Disk (SCS-8V-16-50)</SelectItem>
-                            </SelectGroup>
-                            <SelectGroup>
-                              <SelectLabel>16 vCPU</SelectLabel>
-                              <SelectItem value="SCS-16V-32">16 vCPU + 32GiB RAM (SCS-16V-32)</SelectItem>
-                              <SelectItem value="SCS-16V-32-100">16 vCPU + 32GiB RAM + 100GB Disk (SCS-16V-32-100)</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          Choose an instance flavor for your worker nodes
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="worker_replicas"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Worker replicas</FormLabel>
-                        <FormControl>
-                          <Input type="number" min={1} max={20} {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          How many worker replicas you want
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                                </SelectGroup>
+                                <SelectGroup>
+                                  <SelectLabel>4 vCPU</SelectLabel>
+                                  <SelectItem value="SCS-4V-8">4 vCPU + 8GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-4V-8-20">4 vCPU + 8GiB RAM + 20GB Disk</SelectItem>
+                                  <SelectItem value="SCS-4V-16">4 vCPU + 16GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-4V-16-50">4 vCPU + 16GiB RAM + 50GB Disk</SelectItem>
+                                  <SelectItem value="SCS-4V-16-100s">4 vCPU + 16GiB RAM + 100GB SSD</SelectItem>
+                                  <SelectItem value="SCS-4V-32">4 vCPU + 32GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-4V-32-100">4 vCPU + 32GiB RAM + 100GB Disk</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                  <SelectLabel>8 vCPU</SelectLabel>
+                                  <SelectItem value="SCS-8V-32">8 vCPU + 32GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-8V-32-100">8 vCPU + 32GiB RAM + 100GB Disk</SelectItem>
+                                  <SelectItem value="SCS-8V-16">8 vCPU + 16GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-8V-16-50">8 vCPU + 16GiB RAM + 50GB Disk</SelectItem>
+                                </SelectGroup>
+                                <SelectGroup>
+                                  <SelectLabel>16 vCPU</SelectLabel>
+                                  <SelectItem value="SCS-16V-32">16 vCPU + 32GiB RAM</SelectItem>
+                                  <SelectItem value="SCS-16V-32-100">16 vCPU + 32GiB RAM + 100GB Disk</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Instance flavor of your worker nodes
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="basis-1/4">
+                      <FormField
+                        control={form.control}
+                        name="worker_replicas"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Replicas</FormLabel>
+                            <FormControl>
+                              <Input type="number" min={1} max={20} {...field} />
+                            </FormControl>
+                            <FormDescription>
+
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
+
             </div>
             <div>
               <Card className="">
@@ -496,8 +504,7 @@ export const ClusterForm = ({ ccs }: { ccs: Array<ClusterClass> }) => {
                       </FormItem>
                     )}
                   />
-                  <ul>
-                  </ul>
+
                 </CardContent>
               </Card>
             </div>
