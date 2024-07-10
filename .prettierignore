@@ -1,3 +1,4 @@
 .git/
+chart/
+public/
 pnpm-lock.yaml
-src/components/cluster-form.tsx

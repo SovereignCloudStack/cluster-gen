@@ -1,7 +1,6 @@
-
 export const revalidate = 900; // revalidate every 15mins
 
-import { promises as fs } from 'fs';
+import { promises as fs } from "fs";
 
 import {
   PageActions,
@@ -13,8 +12,10 @@ import {
 import { ClusterForm } from "@/components/form/cluster";
 
 export default async function IndexPage() {
-
-  const file = await fs.readFile(process.cwd() + "/public/clusterschema.json", 'utf8');
+  const file = await fs.readFile(
+    process.cwd() + "/public/clusterschema.json",
+    "utf8",
+  );
   const schema = JSON.parse(file);
 
   return (

@@ -1,11 +1,8 @@
-"use client"
+"use client";
 
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import SyntaxHighlighter from 'react-syntax-highlighter';
+import SyntaxHighlighter from "react-syntax-highlighter";
 
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -18,7 +15,7 @@ import {
   SelectLabel,
 } from "@/components/ui/select";
 
-import { DownloadButton } from '@/components/form/download-button';
+import { DownloadButton } from "@/components/form/download-button";
 import {
   Card,
   CardContent,
@@ -26,23 +23,31 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 
-import { widgets } from "@/components/form/widgets"
-import Form from '@rjsf/core';
-import { RJSFSchema, UiSchema } from '@rjsf/utils';
+import { widgets } from "@/components/form/widgets";
+import Form from "@rjsf/core";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 
-import validator from '@rjsf/validator-ajv8';
-import { parse, stringify } from 'yaml'
+import validator from "@rjsf/validator-ajv8";
+import { stringify } from "yaml";
 import { useState } from "react";
 
-import { MultiInput } from "@/components/multi-input"
+import { MultiInput } from "@/components/form/multi-input";
 
-export const ClusterForm = (schema: Object) => {
+export const ClusterForm = (schema: any) => {
   const [formData, setFormData] = useState(null);
-  const [values, setValues] = useState<string[]>([])
-  const out = stringify(schema)
-  console.log(out)
+  const [values, setValues] = useState<string[]>([]);
+  const schemaObject = schema?.schema;
+
+  const uiSchema: UiSchema = {
+    kind: { "ui:widget": "hidden" },
+    apiVersion: { "ui:widget": "hidden" },
+  };
+
+  const yaml_out = stringify(formData);
+  console.log(yaml_out);
+
   return (
     <>
       <div className="flex space-x-8">
@@ -54,21 +59,39 @@ export const ClusterForm = (schema: Object) => {
             <CardContent className="space-y-4">
               <div>
                 <Form
-                  schema={schema.schema}
+                  schema={schemaObject}
+                  uiSchema={uiSchema}
                   validator={validator}
                   widgets={widgets}
                   formData={formData}
                   onChange={(e) => setFormData(e.formData)}
                 />
-                <MultiInput value={values} onChange={setValues} />
-
-
+                <MultiInput value={values} onchange={setValues} />
               </div>
             </CardContent>
           </Card>
-          <pre>{JSON.stringify(formData, null, 2)}</pre>
+          <SyntaxHighlighter
+            language="json"
+            className="w-1/2 text-sm"
+            style={{
+              "hljs-attr": {
+                color: "hsl(var(--foreground))",
+              },
+              "react-syntax-highlighter-line-number": {
+                color: "#a7a7a7",
+                margin: "0",
+              },
+            }}
+            showLineNumbers={true}
+            customStyle={{
+              backgroundColor: "var(--primary-color)",
+              color: "#0F5FE1",
+            }}
+          >
+            {yaml_out}
+          </SyntaxHighlighter>
         </div>
-      </div >
+      </div>
     </>
   );
-}
+};
