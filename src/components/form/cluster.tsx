@@ -1,20 +1,12 @@
 "use client";
 
+import { useState } from "react";
+import validator from "@rjsf/validator-ajv8";
+import { stringify } from "yaml";
 import SyntaxHighlighter from "react-syntax-highlighter";
+import { UiSchema } from "@rjsf/utils";
 
 import { Separator } from "@/components/ui/separator";
-
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-  SelectLabel,
-} from "@/components/ui/select";
-
 import { DownloadButton } from "@/components/form/download-button";
 import {
   Card,
@@ -24,15 +16,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import { widgets } from "@/components/form/widgets";
-import Form from "@rjsf/core";
-import { RJSFSchema, UiSchema } from "@rjsf/utils";
-
-import validator from "@rjsf/validator-ajv8";
-import { stringify } from "yaml";
-import { useState } from "react";
-
+import RJSForm from "@/components/form/custom";
 import { MultiInput } from "@/components/form/multi-input";
 
 export const ClusterForm = (schema: any) => {
@@ -43,10 +28,18 @@ export const ClusterForm = (schema: any) => {
   const uiSchema: UiSchema = {
     kind: { "ui:widget": "hidden" },
     apiVersion: { "ui:widget": "hidden" },
+    metadata: { labels: { "ui:widget": "hidden" } },
+    spec: {
+      clusterNetwork: { "ui:widget": "hidden" },
+      topology: {
+        workers: {
+          machineDeployments: { failureDomain: { "ui:widget": "hidden" } },
+        },
+      },
+    },
   };
 
   const yaml_out = stringify(formData);
-  console.log(yaml_out);
 
   return (
     <>
@@ -58,15 +51,16 @@ export const ClusterForm = (schema: any) => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Form
+                <RJSForm
+                  noHtml5Validate
                   schema={schemaObject}
                   uiSchema={uiSchema}
+                  formData={formData}
                   validator={validator}
                   widgets={widgets}
-                  formData={formData}
                   onChange={(e) => setFormData(e.formData)}
                 />
-                <MultiInput value={values} onchange={setValues} />
+                {/* <MultiInput value={values} onchange={setValues} /> */}
               </div>
             </CardContent>
           </Card>

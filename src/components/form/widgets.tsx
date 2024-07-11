@@ -8,14 +8,26 @@ import { Select } from "@/components/ui/select";
 import MultiInput from "@/components/form/multi-input";
 import { useState } from "react";
 
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
 export const widgets: RegistryWidgetsType = {
   CheckboxWidget: function (props: WidgetProps) {
     return <Checkbox checked={props.value} onChange={props.onChange} />;
   },
   TextWidget: function (props: WidgetProps) {
+    console.log(props);
     return (
       <Input
         onChange={(e) => props.onChange(e.target.value)}
+        placeholder="cs-cluster"
         value={props.value}
       />
     );

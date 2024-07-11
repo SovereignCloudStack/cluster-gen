@@ -11,12 +11,25 @@ import {
 
 import { ClusterForm } from "@/components/form/cluster";
 
+async function getClusterClasses() {
+  const res = await fetch(
+    "http://localhost:8080/clusterschema/kaas-playground0/openstack-alpha-1-28-v4",
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
+
 export default async function IndexPage() {
   const file = await fs.readFile(
     process.cwd() + "/public/clusterschema.json",
     "utf8",
   );
   const schema = JSON.parse(file);
+  const schema2 = await getClusterClasses();
 
   return (
     <div className="container relative">
