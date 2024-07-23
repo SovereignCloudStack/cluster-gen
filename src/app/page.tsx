@@ -1,7 +1,5 @@
 export const revalidate = 900; // revalidate every 15mins
 
-import { promises as fs } from "fs";
-
 import {
   PageActions,
   PageHeader,
@@ -9,11 +7,24 @@ import {
   PageHeaderHeading,
 } from "@/components/page-header";
 
-import { ClusterForm } from "@/components/form/cluster";
+import { ClusterForm } from "@/components/form/clusterform";
+
+async function getNamespaces() {
+  const res = await fetch(
+    "https://capi-jsgen.moin.k8s.scs.community/namespaces",
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
+
 
 async function getClusterClasses() {
   const res = await fetch(
-    "http://localhost:8080/clusterschema/kaas-playground0/openstack-alpha-1-28-v4",
+    "https://capi-jsgen.moin.k8s.scs.community/clusterschema/kaas-playground0/openstack-scs-1-30-v1",
   );
 
   if (!res.ok) {
@@ -24,12 +35,10 @@ async function getClusterClasses() {
 }
 
 export default async function IndexPage() {
-  const file = await fs.readFile(
-    process.cwd() + "/public/clusterschema.json",
-    "utf8",
-  );
-  const schema = JSON.parse(file);
-  const schema2 = await getClusterClasses();
+  const namespaces = await getNamespaces();
+  const schema = await getClusterClasses();
+  
+  console.log(namespaces)
 
   return (
     <div className="container relative">

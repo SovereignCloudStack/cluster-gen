@@ -8,6 +8,7 @@ import { Select } from "@/components/ui/select";
 import MultiInput from "@/components/form/multi-input";
 import { useState } from "react";
 
+
 import {
   Form,
   FormControl,
@@ -23,7 +24,7 @@ export const widgets: RegistryWidgetsType = {
     return <Checkbox checked={props.value} onChange={props.onChange} />;
   },
   TextWidget: function (props: WidgetProps) {
-    console.log(props);
+    //console.log(props);
     return (
       <Input
         onChange={(e) => props.onChange(e.target.value)}
