@@ -9,7 +9,7 @@ import {
 
 import { ClusterForm } from "@/components/form/clusterform";
 
-async function getNamespaces() {
+async function getClusterClasses() {
   const res = await fetch(
     "https://capi-jsgen.moin.k8s.scs.community/namespaces",
   );
@@ -22,7 +22,7 @@ async function getNamespaces() {
 }
 
 
-async function getClusterClasses() {
+async function getDefinitions() {
   const res = await fetch(
     "https://capi-jsgen.moin.k8s.scs.community/clusterschema/kaas-playground0/openstack-scs-1-30-v1",
   );
@@ -35,17 +35,16 @@ async function getClusterClasses() {
 }
 
 export default async function IndexPage() {
-  const namespaces = await getNamespaces();
-  const schema = await getClusterClasses();
-  
-  console.log(namespaces)
+  const namespaces = await getClusterClasses();
+  const schema = await getDefinitions();
+
 
   return (
     <div className="container relative">
       <PageHeader>
         <PageHeaderHeading>Cluster Gen</PageHeaderHeading>
         <PageHeaderDescription>
-          Generate Cluster objects based on SCS Cluster Stacks
+          Generate ready to deploy Cluster objects based on Cluster Stacks
         </PageHeaderDescription>
         <PageActions>
           <div className="mt-8">

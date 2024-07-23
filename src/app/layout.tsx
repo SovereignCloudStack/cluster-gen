@@ -15,11 +15,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   description: siteConfig.description,
   keywords: [
+    "Cluster Gen",
     "Cluster UI",
     "Cluster Stacks",
     "Cluster-API",
     "ClusterClass",
     "Sovereign Cloud Stack",
+    "Kubernetes",
   ],
 
   openGraph: {

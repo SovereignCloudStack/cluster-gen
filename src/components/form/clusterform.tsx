@@ -5,7 +5,7 @@ import React from "react";
 import validator from "@rjsf/validator-ajv8";
 import { stringify } from "yaml";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { UiSchema, FieldProps, RegistryFieldsType  } from "@rjsf/utils";
+import { UiSchema, FieldProps, RegistryFieldsType } from "@rjsf/utils";
 
 import { Separator } from "@/components/ui/separator";
 import { DownloadButton } from "@/components/form/download-button";
@@ -20,7 +20,7 @@ import {
 import { widgets } from "@/components/form/widgets";
 import { Form } from "@/components/form/ui";
 import { MultiInput } from "@/components/form/multi-input";
-import  { ClusterGroup}  from "@/components/form/fields";
+import { ClusterGroup } from "@/components/form/fields";
 
 export const ClusterForm = (schema: any) => {
   const [formData, setFormData] = useState(null);
@@ -44,7 +44,7 @@ export const ClusterForm = (schema: any) => {
 
   const yaml_out = stringify(formData);
 
-     // const fields: RegistryFieldsType = { geo: ClusterGroup };
+  // const fields: RegistryFieldsType = { geo: ClusterGroup };
 
   return (
     <>
@@ -57,12 +57,12 @@ export const ClusterForm = (schema: any) => {
             <CardContent className="space-y-4">
               <div>
                 <Form
-                  noHtml5Validates
+                  noHtml5Validate
                   schema={schemaObject}
                   uiSchema={uiSchema}
                   formData={formData}
                   validator={validator}
-                 // fields={fields}
+                  // fields={fields}
                   widgets={widgets}
                   onChange={(e) => setFormData(e.formData)}
                 />

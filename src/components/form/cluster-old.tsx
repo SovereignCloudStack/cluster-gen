@@ -40,7 +40,7 @@ import {
 import { widgets } from "@/components/form/widgets"
 import validator from '@rjsf/validator-ajv8';
 
-export const ClusterForm = (schema: Object) => {
+export const ClusterForm = (schema: any) => {
     console.log(schema)
     const FormSchema = z.object({
         cluster_name: z.string().min(2, {
