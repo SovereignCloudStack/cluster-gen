@@ -4,7 +4,7 @@ Web UI for creating Cluster objects based on SCS Cluster Stacks.
 
 ## Workflow
 
-- Read clusterclass definitions from the kube-apiserver of the moin-cluster with [capi-jsgen](https://github.com/SovereignCloudStack/capi-jsgen)
+- Read clusterclass definitions from the kube-apiserver of the moin-cluster via the REST API provided by [capi-jsgen](https://github.com/SovereignCloudStack/capi-jsgen)
 - Render yaml form in live editor
 - On Download: perform form validation, create yaml file and open up download prompt
 

@@ -18,7 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { widgets } from "@/components/form/widgets";
-import { Form } from "@/components/form/ui";
+import { Form } from "@/components/form/custom";
 import { MultiInput } from "@/components/form/multi-input";
 import { ClusterGroup } from "@/components/form/fields";
 
@@ -28,7 +28,7 @@ export const ClusterForm = (schema: any) => {
   const schemaObject = schema?.schema;
 
   const uiSchema: UiSchema = {
-    'ui:field': 'geo',
+    "ui:field": "geo",
     kind: { "ui:widget": "hidden" },
     apiVersion: { "ui:widget": "hidden" },
     metadata: { labels: { "ui:widget": "hidden" } },
@@ -42,43 +42,45 @@ export const ClusterForm = (schema: any) => {
     },
   };
 
-  const yaml_out = stringify(formData);
+  const yaml_out = stringify(formData).trimEnd(); // json to yaml conversion
 
   // const fields: RegistryFieldsType = { geo: ClusterGroup };
 
   return (
     <>
       <div className="flex space-x-8">
-        <div className="grid grid-row-cols grid-cols-2 gap-4 mb-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="">Cluster</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Form
-                  noHtml5Validate
-                  schema={schemaObject}
-                  uiSchema={uiSchema}
-                  formData={formData}
-                  validator={validator}
-                  // fields={fields}
-                  widgets={widgets}
-                  onChange={(e) => setFormData(e.formData)}
-                />
-                {/* <MultiInput value={values} onchange={setValues} /> */}
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-row-cols grid-cols-2 gap-6 mb-4">
+          <div className="">
+            <Card>
+              <CardHeader>
+                <CardTitle className="">Cluster</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Form
+                    noHtml5Validate
+                    schema={schemaObject}
+                    uiSchema={uiSchema}
+                    formData={formData}
+                    validator={validator}
+                    // fields={fields}
+                    widgets={widgets}
+                    onChange={(e) => setFormData(e.formData)}
+                  />
+                  {/* <MultiInput value={values} onchange={setValues} /> */}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
           <SyntaxHighlighter
-            language="json"
-            className="w-1/2 text-sm"
+            language="yaml"
+            className="text-sm w-1/2"
             style={{
               "hljs-attr": {
                 color: "hsl(var(--foreground))",
               },
               "react-syntax-highlighter-line-number": {
-                color: "#a7a7a7",
+                color: "rgb(183 183 183)",
                 margin: "0",
               },
             }}

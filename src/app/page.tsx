@@ -1,5 +1,7 @@
 export const revalidate = 900; // revalidate every 15mins
 
+import sortJson from "sort-json";
+
 import {
   PageActions,
   PageHeader,
@@ -21,7 +23,6 @@ async function getClusterClasses() {
   return res.json();
 }
 
-
 async function getDefinitions() {
   const res = await fetch(
     "https://capi-jsgen.moin.k8s.scs.community/clusterschema/kaas-playground0/openstack-scs-1-30-v1",
@@ -36,11 +37,14 @@ async function getDefinitions() {
 
 export default async function IndexPage() {
   const namespaces = await getClusterClasses();
+  console.log(namespaces);
   const schema = await getDefinitions();
 
+  const options = { ignoreCase: true, reverse: false, depth: 2 };
+  const sorted = sortJson(schema, options);
 
   return (
-    <div className="container relative">
+    <div className="container max-w-4xl relative">
       <PageHeader>
         <PageHeaderHeading>Cluster Gen</PageHeaderHeading>
         <PageHeaderDescription>
@@ -48,7 +52,7 @@ export default async function IndexPage() {
         </PageHeaderDescription>
         <PageActions>
           <div className="mt-8">
-            <ClusterForm schema={schema} />
+            <ClusterForm schema={sorted} />
           </div>
         </PageActions>
       </PageHeader>

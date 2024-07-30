@@ -8,7 +8,6 @@ import { Select } from "@/components/ui/select";
 import MultiInput from "@/components/form/multi-input";
 import { useState } from "react";
 
-
 import {
   Form,
   FormControl,
@@ -28,7 +27,7 @@ export const widgets: RegistryWidgetsType = {
     return (
       <Input
         onChange={(e) => props.onChange(e.target.value)}
-        placeholder="cs-cluster"
+        placeholder="cluster"
         value={props.value}
       />
     );

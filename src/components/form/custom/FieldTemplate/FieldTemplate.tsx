@@ -62,7 +62,7 @@ export default function FieldTemplate<
         {displayLabel && (
           <label
             htmlFor={id}
-            className={`mb-2 inline-block ${
+            className={`text-m font-medium leading-none tracking-tight mb-4 inline-block   ${
               rawErrors.length > 0 ? "text-red-500" : ""
             }`}
           >

@@ -1,5 +1,10 @@
-import { RJSFSchema, UiSchema, FieldProps, RegistryFieldsType } from '@rjsf/utils';
-import React from 'react';
+import {
+  RJSFSchema,
+  UiSchema,
+  FieldProps,
+  RegistryFieldsType,
+} from "@rjsf/utils";
+import React from "react";
 
 export class ClusterGroup extends React.Component<FieldProps> {
   constructor(props: FieldProps) {
@@ -13,7 +18,7 @@ export class ClusterGroup extends React.Component<FieldProps> {
         {
           [name]: parseFloat(event.target.value),
         },
-        () => this.props.onChange(this.state)
+        () => this.props.onChange(this.state),
       );
     };
   }
@@ -23,8 +28,8 @@ export class ClusterGroup extends React.Component<FieldProps> {
     const { lat, lon } = this.state;
     return (
       <div>
-        <input type='number' value={lat} onChange={this.onChange('lat')} />
-        <input type='number' value={lon} onChange={this.onChange('lon')} />
+        <input type="number" value={lat} onChange={this.onChange("lat")} />
+        <input type="number" value={lon} onChange={this.onChange("lon")} />
       </div>
     );
   }

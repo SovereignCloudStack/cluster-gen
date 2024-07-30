@@ -55,47 +55,43 @@ const Icons = {
 export function Navbar() {
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <nav className="container flex h-14 max-w-screen-2xl items-center justify-center">
-          <div className="flex flex-wrap justify-center items-center">
+      <header className="sticky top-0 z-50 border-b transition-colors border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <nav className="mx-auto flex justify-between max-w-[1440px] max-w-container flex-row items-center gap-6 px-4 h-14">
+          <Link
+            target="_blank"
+            href="https://scs.community"
+            aria-label="SovereignCloudStack"
+            className="flex items-center -m-2 gap-1 p-2"
+          >
+            <Icons.logo className="h-6 w-6" />
+            <span className="hidden font-bold ml-4 mt-1">SCS</span>
+          </Link>
+          <Link
+            target="_blank"
+            href="https://github.com/SovereignCloudStack/cluster-stacks"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            Cluster Stacks
+          </Link>
+          <div className="md:gap-2 inline-flex">
+            <ThemeToggle />
             <Link
+              href={siteConfig.links.github}
               target="_blank"
-              href="https://scs.community"
-              aria-label="SovereignCloudStack"
-              className="flex items-center"
+              rel="noreferrer"
             >
-              <Icons.logo className="h-6 w-6" />
-              <span className="hidden font-bold ml-4 mt-1">SCS</span>
+              <div
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                  }),
+                  "h-8 w-8 px-0",
+                )}
+              >
+                <Icons.gitHub className="h-5 w-5" />
+                <span className="sr-only">GitHub</span>
+              </div>
             </Link>
-            <div className="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1 ml-96 mr-96 pl-12 pr-12">
-              <Link
-                target="_blank"
-                href="https://github.com/SovereignCloudStack/cluster-stacks"
-                className="text-sm text-foreground/60"
-              >
-                Cluster Stacks
-              </Link>
-            </div>
-            <div className="flex items-center lg:order-2 gap-2">
-              <ThemeToggle />
-              <Link
-                href={siteConfig.links.github}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <div
-                  className={cn(
-                    buttonVariants({
-                      variant: "ghost",
-                    }),
-                    "h-8 w-8 px-0",
-                  )}
-                >
-                  <Icons.gitHub className="h-5 w-5" />
-                  <span className="sr-only">GitHub</span>
-                </div>
-              </Link>
-            </div>
           </div>
         </nav>
       </header>

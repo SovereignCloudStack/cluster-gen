@@ -11,12 +11,20 @@ import {
 
 import { ClusterForm } from "@/components/form/cluster-old";
 
-export default async function IndexPage() {
-  const file = await fs.readFile(
-    process.cwd() + "/public/clusterschema.json",
-    "utf8",
+async function getDefinitions() {
+  const res = await fetch(
+    "https://capi-jsgen.moin.k8s.scs.community/clusterschema/kaas-playground0/openstack-scs-1-30-v1",
   );
-  const schema = JSON.parse(file);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
+
+export default async function IndexPage() {
+  const data = await getDefinitions();
 
   return (
     <div className="container relative">
@@ -27,7 +35,7 @@ export default async function IndexPage() {
         </PageHeaderDescription>
         <PageActions>
           <div className="mt-8">
-            <ClusterForm schema={schema} />
+            <ClusterForm schema={data} />
           </div>
         </PageActions>
       </PageHeader>
