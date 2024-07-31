@@ -6,6 +6,8 @@ import {
 } from "@rjsf/utils";
 import React from "react";
 
+import SelectWidget from "@/components/form/custom/SelectWidget";
+
 export class ClusterGroup extends React.Component<FieldProps> {
   constructor(props: FieldProps) {
     super(props);
@@ -29,7 +31,6 @@ export class ClusterGroup extends React.Component<FieldProps> {
     return (
       <div>
         <input type="number" value={lat} onChange={this.onChange("lat")} />
-        <input type="number" value={lon} onChange={this.onChange("lon")} />
       </div>
     );
   }

@@ -8,7 +8,6 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { UiSchema, FieldProps, RegistryFieldsType } from "@rjsf/utils";
 
 import { Separator } from "@/components/ui/separator";
-import { DownloadButton } from "@/components/form/download-button";
 import {
   Card,
   CardContent,
@@ -17,15 +16,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import { widgets } from "@/components/form/widgets";
 import { Form } from "@/components/form/custom";
 import { MultiInput } from "@/components/form/multi-input";
 import { ClusterGroup } from "@/components/form/fields";
+import { DownloadButton } from "@/components/form/download-button";
+
 
 export const ClusterForm = (schema: any) => {
+
+  const clusterstacks = schema?.schema.clusterstacks
+  const schemas = schema?.schema.definitions
+
+  console.log(clusterstacks)
+
   const [formData, setFormData] = useState(null);
-  const [values, setValues] = useState<string[]>([]);
-  const schemaObject = schema?.schema;
+
+  const schemaObject = schema?.schema.definitions[7];
 
   const uiSchema: UiSchema = {
     "ui:field": "geo",
@@ -44,12 +52,13 @@ export const ClusterForm = (schema: any) => {
 
   const yaml_out = stringify(formData).trimEnd(); // json to yaml conversion
 
-  // const fields: RegistryFieldsType = { geo: ClusterGroup };
+  // const [values, setValues] = useState<string[]>([]);
+  const fields: RegistryFieldsType = { geo: ClusterGroup };
 
   return (
     <>
-      <div className="flex space-x-8">
-        <div className="grid grid-row-cols grid-cols-2 gap-6 mb-4">
+      <div className="flex space-x-8 mt-8">
+        <div className="grid grid-row-cols grid-cols-2 gap-12 mb-4">
           <div className="">
             <Card>
               <CardHeader>
