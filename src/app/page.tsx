@@ -1,3 +1,7 @@
+export const revalidate = 900; // revalidate every 15mins
+
+import sortJson from "sort-json";
+
 import {
   PageActions,
   PageHeader,
@@ -5,34 +9,50 @@ import {
   PageHeaderHeading,
 } from "@/components/page-header";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ClusterForm } from "@/components/form/cluster";
 
-import { ClusterStackForm } from "@/components/clusterstack-form";
-import { ClusterForm } from "@/components/cluster-form";
+async function getClusterClasses() {
+  const options = { ignoreCase: true, reverse: false, depth: 2 };
 
-export default function IndexPage() {
+  try {
+    const res = await fetch(
+      "https://capi-jsgen.moin.k8s.scs.community/namespaces",
+    ).then((response) => response.json());
+    const clusterstacks = res["kaas-playground0"];
+
+    const unsorted = await Promise.all(
+      clusterstacks.map((stack: any) =>
+        fetch(
+          `https://capi-jsgen.moin.k8s.scs.community/clusterschema/kaas-playground0/` +
+            stack,
+        ).then((response) => response.json()),
+      ),
+    );
+
+    const definitions = unsorted.map((stack: any) => sortJson(stack, options));
+
+    const schema = Object.fromEntries(
+      clusterstacks.map((key: string, i: number) => [key, definitions[i]]),
+    );
+
+    return schema;
+  } catch (error) {
+    console.error("runtime error: ", error);
+  }
+}
+
+export default async function IndexPage() {
+  const schema = await getClusterClasses();
+
   return (
-    <div className="container relative">
+    <div className="container max-w-4xl relative">
       <PageHeader>
         <PageHeaderHeading>Cluster Gen</PageHeaderHeading>
         <PageHeaderDescription>
-          Generate Cluster objects based on SCS Cluster Stacks
+          Generate ready to deploy Cluster objects based on Cluster Stacks
         </PageHeaderDescription>
         <PageActions>
-          <Tabs defaultValue="clusterstacks" className="w-[2000px] mt-2">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="clusterstacks">Cluster Stack</TabsTrigger>
-              <TabsTrigger value="cluster">Cluster</TabsTrigger>
-            </TabsList>
-            <div className="w-full space-x-8 mt-14">
-              <TabsContent value="clusterstacks">
-                <ClusterStackForm />
-              </TabsContent>
-              <TabsContent value="cluster">
-                <ClusterForm />
-              </TabsContent>
-            </div>
-          </Tabs>
+          <ClusterForm schema={schema} />
         </PageActions>
       </PageHeader>
     </div>

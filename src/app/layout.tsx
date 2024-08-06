@@ -5,6 +5,7 @@ import { fontSans } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { siteConfig } from "@/config/site";
 import { Navbar } from "@/components/navbar";
+import { TailwindIndicator } from "@/components/tailwind-indicator";
 
 export const metadata: Metadata = {
   title: {
@@ -14,11 +15,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   description: siteConfig.description,
   keywords: [
+    "Cluster Gen",
     "Cluster UI",
     "Cluster Stacks",
     "Cluster-API",
     "ClusterClass",
     "Sovereign Cloud Stack",
+    "Kubernetes",
   ],
 
   openGraph: {
@@ -67,6 +70,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <main className="flex-1">{children}</main>
             </div>
           </ThemeProvider>
+          <TailwindIndicator />
         </body>
       </html>
     </>
