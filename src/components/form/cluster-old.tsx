@@ -41,7 +41,6 @@ import { widgets } from "@/components/form/widgets";
 import validator from "@rjsf/validator-ajv8";
 
 export const ClusterForm = (schema: any) => {
-  console.log(schema);
   const FormSchema = z.object({
     cluster_name: z.string().min(2, {
       message: "Cluster name must be at least 2 characters.",

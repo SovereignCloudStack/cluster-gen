@@ -1,3 +1,5 @@
+import { useRef } from "react";
+
 import {
   FormContextType,
   getSubmitButtonOptions,
@@ -19,15 +21,38 @@ export default function SubmitButton<
     props: submitButtonProps,
   } = getSubmitButtonOptions<T, S, F>(props.uiSchema);
 
+  const { uiSchema } = props;
+
   if (norender) {
     return null;
   }
 
+  const linkRef = useRef(null);
+
+  const handleDownload = async () => {
+    const blob = new Blob(uiS, {
+      type: "application/yaml",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = linkRef.current as HTMLAnchorElement | null;
+
+    if (!link) {
+      return;
+    }
+
+    link.href = url;
+    link.download = "cluster.yaml";
+    link.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <div>
-      <Button type="submit" {...submitButtonProps}>
-        Download
-      </Button>
+      <a ref={linkRef}>
+        <Button type="submit" {...submitButtonProps} onClick={handleDownload}>
+          Download
+        </Button>
+      </a>
     </div>
   );
 }

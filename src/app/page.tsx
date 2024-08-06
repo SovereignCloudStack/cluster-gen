@@ -24,15 +24,18 @@ async function getClusterClasses() {
       clusterstacks.map((stack: any) =>
         fetch(
           `https://capi-jsgen.moin.k8s.scs.community/clusterschema/kaas-playground0/` +
-          stack,
+            stack,
         ).then((response) => response.json()),
       ),
     );
 
     const definitions = unsorted.map((stack: any) => sortJson(stack, options));
 
-    return { clusterstacks, definitions };
+    const schema = Object.fromEntries(
+      clusterstacks.map((key: string, i: number) => [key, definitions[i]]),
+    );
 
+    return schema;
   } catch (error) {
     console.error("runtime error: ", error);
   }

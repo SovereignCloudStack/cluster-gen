@@ -81,10 +81,9 @@ export default function ArrayFieldTemplate<
             {canAdd && (
               <div className="">
                 <div className="mt-2 flex">
-                  <div className="w-3/4"></div>
-                  <div className="w-1/4 px-4 py-6">
+                  <div className="">
                     <AddButton
-                      className="array-item-add"
+                      className="array-item-add rounded-lg bg-[#0F5FE1] h-8 w-1"
                       onClick={onAddClick}
                       disabled={disabled || readonly}
                       uiSchema={uiSchema}

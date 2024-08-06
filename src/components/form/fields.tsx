@@ -6,19 +6,27 @@ import {
 } from "@rjsf/utils";
 import React from "react";
 
-import SelectWidget from "@/components/form/custom/SelectWidget";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+  SelectLabel,
+} from "@/components/ui/select";
 
-export class ClusterGroup extends React.Component<FieldProps> {
+export default class k8s_version extends React.Component<FieldProps> {
   constructor(props: FieldProps) {
     super(props);
     this.state = { ...props.formData };
   }
 
-  onChange(name: any) {
-    return (event: any) => {
+  onChange(name) {
+    return (event) => {
       this.setState(
         {
-          [name]: parseFloat(event.target.value),
+          [name]: event.target.value,
         },
         () => this.props.onChange(this.state),
       );
@@ -26,12 +34,60 @@ export class ClusterGroup extends React.Component<FieldProps> {
   }
 
   render() {
-    //@ts-ignore
-    const { lat, lon } = this.state;
+    const { k8s_version } = this.state;
+    const k8s_versions = {
+      "1.30": ["1.30.3", "1.30.2", "1.30.1", "1.30.0"],
+      "1.29": [
+        "1.29.6",
+        "1.29.5",
+        "1.29.4",
+        "1.29.3",
+        "1.29.2",
+        "1.29.1" + "1.29.0",
+      ],
+      "1.28": [
+        "1.28.11",
+        "1.28.10",
+        "1.28.9",
+        "1.28.8",
+        "1.28.7",
+        "1.28.6",
+        "1.28.5",
+        "1.28.4",
+        "1.28.3",
+        "1.28.2",
+        "1.28.1",
+        "1.28.0",
+      ],
+    };
+
+
     return (
-      <div>
-        <input type="number" value={lat} onChange={this.onChange("lat")} />
-      </div>
+      <>
+        <label className="text-m font-medium leading-none tracking-tight mb-4 inline-block   ">Kubernetes version</label>
+        <Select
+          onValueChange={this.onChange("k8s_version")}
+          defaultValue="1.29.3"
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {k8s_versions["1.30"].map((item) => (
+              <SelectItem
+                key={item}
+                value={item.toString()}
+                defaultValue="1.29.3"
+              >
+                {item}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-sm text-muted-foreground mt-2">
+          Select which Kubernetes minor version you want
+        </p>
+      </>
     );
   }
 }

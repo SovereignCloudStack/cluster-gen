@@ -35,6 +35,9 @@ export default function ArrayFieldItemTemplate<
     paddingLeft: 6,
     paddingRight: 6,
     fontWeight: "bold",
+    backgroundColor: "hsl(var(--muted))",
+    color: "hsl(var(--foreground))",
+    borderRadius: "0.5rem",
   };
 
   return (
