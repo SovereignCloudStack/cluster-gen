@@ -62,8 +62,9 @@ export default function FieldTemplate<
         {displayLabel && (
           <label
             htmlFor={id}
-            className={`text-m font-medium leading-none tracking-tight mb-4 inline-block   ${rawErrors.length > 0 ? "text-red-500" : ""
-              }`}
+            className={`text-m font-medium leading-none tracking-tight mb-4 inline-block   ${
+              rawErrors.length > 0 ? "text-red-500" : ""
+            }`}
           >
             {label.charAt(0).toUpperCase() + label.slice(1)}
             {required ? "*" : null}
@@ -73,8 +74,11 @@ export default function FieldTemplate<
         {displayLabel && rawDescription && (
           <small className="mt-1 block">
             <div
-              className={`${rawErrors.length > 0 ? "text-red-500" : "text-sm text-muted-foreground mt-2"
-                }`}
+              className={`${
+                rawErrors.length > 0
+                  ? "text-red-500"
+                  : "text-sm text-muted-foreground mt-2"
+              }`}
             >
               {description}
             </div>

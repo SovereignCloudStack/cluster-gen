@@ -23,7 +23,6 @@ export const widgets: RegistryWidgetsType = {
     return <Checkbox checked={props.value} onChange={props.onChange} />;
   },
   TextWidget: function (props: WidgetProps) {
-    //console.log(props);
     return (
       <Input
         onChange={(e) => props.onChange(e.target.value)}
