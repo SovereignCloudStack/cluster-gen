@@ -47,7 +47,7 @@ docker run -p 3000:3000 cluster-gen
 
 #### Helm
 
-Inside `charts/` you can find a minimal chart to deploy on Kubernetes with a Service and Ingress
+Inside `charts/` you can find a minimal chart to deploy Cluster Gen on Kubernetes with a Service and an Ingress.
 
 ### Release
 

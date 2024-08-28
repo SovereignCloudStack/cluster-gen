@@ -9,7 +9,7 @@ import {
   PageHeaderHeading,
 } from "@/components/page-header";
 
-import { ClusterForm } from "@/components/form/cluster";
+import { FullForm } from "@/components/form/form";
 
 async function getClusterClasses() {
   const options = { ignoreCase: true, reverse: false, depth: 2 };
@@ -52,7 +52,7 @@ export default async function IndexPage() {
           Generate ready to deploy Cluster objects based on Cluster Stacks
         </PageHeaderDescription>
         <PageActions>
-          <ClusterForm schema={schema} />
+          <FullForm schema={schema} />
         </PageActions>
       </PageHeader>
     </div>

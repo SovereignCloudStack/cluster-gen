@@ -5,7 +5,6 @@ import React from "react";
 import validator from "@rjsf/validator-ajv8";
 import { stringify } from "yaml";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { uiSchema } from "@/components/form/uischema";
 
 import SubmitButton from "./custom/SubmitButton";
 
@@ -43,26 +42,108 @@ import {
 
 import { getDefaultRegistry } from "@rjsf/core";
 import { ObjectFieldTemplateProps } from "@rjsf/utils";
+
+const uiSchema: UiSchema = {
+  external_id: { "ui:widget": "hidden" },
+  controller_root_disk: {
+    "ui:title": "Controller Disk Size",
+    "ui:description": "Root disk size in GiB for control-plane nodes",
+  },
+  worker_root_disk: {
+    "ui:title": "Worker Disk Size",
+    "ui:description": "Root disk size in GiB for worker nodes",
+  },
+  ssh_key: {
+    "ui:title": "SSH Key",
+    "ui:description": "The SSH key to inject in the nodes",
+  },
+  node_cidr: {
+    "ui:title": "Node CIDR",
+    "ui:description": "NodeCIDR is the OpenStack Subnet to be created",
+  },
+  apiserver_loadbalancer: {
+    "ui:title": "Apiserver Loadbalancer",
+    "ui:description":
+      "Configure the loadbalancer that is placed in front of the apiserver",
+  },
+  workload_loadbalancer: {
+    "ui:title": "Workload Loadbalancer",
+    "ui:description":
+      "Configure the loadbalancer solution for your services inside your cluster.",
+  },
+};
+
 const registry = getDefaultRegistry();
 
 const ObjectFieldTemplate = registry.templates.ObjectFieldTemplate;
 
-export const ClusterForm = (schema: any) => {
-  const schemas = schema?.schema;
-  const list = Object.keys(schemas).reverse();
+export const VariablesForm = (schema: any) => {
+  const schema_variables = schema?.schema;
+  const list = Object.keys(schema_variables).reverse();
 
-  console.log(
-    schemas["openstack-scs-1-30-v1"].properties.spec.properties.topology
-      .properties.variables,
-  );
+  const variables =
+    schema_variables.properties.spec.properties.topology.properties.variables;
 
-  // Define the custom field components to register; here our "geo"
-  // custom field component
-  const fields: RegistryFieldsType = { k8s_version: version };
+  function transformData(input: any): any {
+    const result: any = {
+      properties: {},
+    };
+
+    input.items.forEach((item: any) => {
+      if (item.type === "object" && item.properties) {
+        const name = item.properties.name.default;
+        const value = item.properties.value;
+
+        if (value.type === "array") {
+          result.properties[name] = {
+            title: formatTitle(name),
+            description: value.description,
+            type: value.type,
+            format: value.format,
+            default: value.default,
+            example: value.example,
+            items: { type: item.properties.value.items.type },
+          };
+        } else if (item.properties.value.type === "object") {
+          const subitems = item.properties.value.properties;
+          console.log(subitems);
+
+          //input.items.forEach((item: any) => { console.log(item) })
+          //console.log(item.properties.value)
+          //const subitems = Array.from(item.properties.value.properties)
+          //console.log(subitems)
+          //subitems.forEach((subitem: any) => {
+          //console.log(subitems)
+          //})
+        } else {
+          result.properties[name] = {
+            title: formatTitle(name),
+            description: value.description,
+            type: value.type,
+            format: value.format,
+            default: value.default,
+            example: value.example,
+          };
+        }
+      }
+    });
+
+    return result;
+  }
+
+  function formatTitle(str: string): string {
+    return str
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  const transformed = transformData(variables);
+  //console.log(JSON.stringify(transformed, null, 2));
 
   const [clusterstack, setClusterStack] = useState("openstack-scs-1-30-v1");
   const [formData, setFormData] = useState(null);
-  const [activeSchema, setActiveSchema] = useState(schemas[clusterstack]);
+  const [activeSchema, setActiveSchema] = useState(transformed);
 
   const handleSwitch = (value: string) => {
     setClusterStack(value);
@@ -72,141 +153,33 @@ export const ClusterForm = (schema: any) => {
 
   const yaml_out = stringify(formData).trimEnd(); // json to yaml conversion
 
-  // CUSTOM GROUPS (Cluster, Machines, Variables)
-
-  const groups = [
-    {
-      title: "cluster",
-      fields: [
-        "metadata.properties.name",
-        "metadata.properties.namespace",
-        "version",
-      ],
-    },
-    { title: "machines", fields: "spec.variables" },
-    //{ title: "variables", fields: "spec.variables" },
-  ];
-
-  const getPropsForGroup = (
-    group: any,
-    props: ObjectFieldTemplateProps,
-  ): ObjectFieldTemplateProps => {
-    2;
-    console.log(props.properties);
-    console.log(group.fields);
-    console.log(props.properties.filter((p) => console.log(p)));
-
-    // More filtering might be required for propper functionality, this is just a POC
-    return {
-      ...props,
-      // properties: props.properties.filter((p) => group.fields.includes(p.name)),
-    };
-  };
-
-  const ObjectFieldTemplateWrapper = (props: ObjectFieldTemplateProps) => {
-    return (
-      <>
-        {groups.map((group) => {
-          const childProps = getPropsForGroup(group, props);
-          console.log(group);
-          return (
-            <>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="">
-                    {group.title.charAt(0).toUpperCase() + group.title.slice(1)}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <ObjectFieldTemplate key={group.title} {...childProps} />
-                  </div>
-                </CardContent>
-              </Card>
-            </>
-          );
-        })}
-      </>
-    );
-  };
-
   return (
     <>
-      <div className="flex space-x-8 mt-8">
-        <div className="grid grid-row-cols grid-cols-2 gap-12 mb-4">
-          <div className="">
-            <div className="mb-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="">Cluster Stack</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Select
-                    onValueChange={(value) => handleSwitch(value)}
-                    defaultValue={clusterstack}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {list.map((item) => (
-                        <SelectItem
-                          key={item}
-                          value={item.toString()}
-                          defaultValue="openstack-scs-1-30-v1"
-                        >
-                          {item}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Select which Cluster Stack to use
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div>
-              <RJSForm
-                schema={activeSchema}
-                uiSchema={uiSchema}
-                //formData={formData}
-                validator={validator}
-                fields={fields}
-                widgets={widgets}
-                onChange={(e) => setFormData(e.formData)}
-                templates={{
-                  ButtonTemplates: { SubmitButton },
-                  //ObjectFieldTemplate: ObjectFieldTemplateWrapper,
-                }}
-              >
-                {/*<DownloadButton formStatus={validator} formData={formData}/> */}
-              </RJSForm>
-
-              {/* <MultiInput value={values} onchange={setValues} /> */}
-            </div>
+      <div className="space-x-8 mt-8">
+        <div className="mb-4">
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="">Variables</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <RJSForm
+                  schema={transformed}
+                  uiSchema={uiSchema}
+                  //formData={formData}
+                  validator={validator}
+                  // fields={fields}
+                  widgets={widgets}
+                  onChange={(e) => setFormData(e.formData)}
+                  templates={{
+                    ButtonTemplates: { SubmitButton },
+                  }}
+                >
+                  {/*<DownloadButton formStatus={validator} formData={formData}/> */}
+                </RJSForm>
+              </CardContent>
+            </Card>
           </div>
-          <SyntaxHighlighter
-            language="yaml"
-            className="text-sm w-1/2"
-            style={{
-              "hljs-attr": {
-                color: "hsl(var(--foreground))",
-              },
-              "react-syntax-highlighter-line-number": {
-                color: "rgb(183 183 183)",
-                margin: "0",
-              },
-            }}
-            showLineNumbers={true}
-            customStyle={{
-              backgroundColor: "var(--primary-color)",
-              color: "#0F5FE1",
-            }}
-          >
-            {yaml_out}
-          </SyntaxHighlighter>
         </div>
       </div>
     </>
