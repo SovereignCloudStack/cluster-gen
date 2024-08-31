@@ -1,4 +1,4 @@
-export const revalidate = 900; // revalidate every 15mins
+export const revalidate = 1800; // revalidate every 30mins
 
 import sortJson from "sort-json";
 
@@ -12,8 +12,6 @@ import {
 import { FullForm } from "@/components/form/form";
 
 async function getClusterClasses() {
-  const options = { ignoreCase: true, reverse: false, depth: 2 };
-
   try {
     const res = await fetch(
       "https://capi-jsgen.moin.k8s.scs.community/namespaces",
@@ -29,8 +27,8 @@ async function getClusterClasses() {
       ),
     );
 
+    const options = { ignoreCase: true, reverse: false, depth: 2 };
     const definitions = unsorted.map((stack: any) => sortJson(stack, options));
-
     const schema = Object.fromEntries(
       clusterstacks.map((key: string, i: number) => [key, definitions[i]]),
     );

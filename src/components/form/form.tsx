@@ -46,17 +46,11 @@ import { VariablesForm } from "@/components/form/variables";
 export const FullForm = (schema: any) => {
   const schemas = schema?.schema;
   const list = Object.keys(schemas).reverse();
-  //console.log(list)
-
-  //delete schemas["openstack-scs-1-30-v1"].properties.spec.properties.topology.properties.variables
-  //console.log(schemas["openstack-scs-1-30-v1"].properties.spec.properties.topology)
-
-  // Define the custom field components to register; here our "geo"
-  // custom field component
-  const fields: RegistryFieldsType = { k8s_version: version };
 
   const [clusterstack, setClusterStack] = useState("openstack-scs-1-30-v1");
   const [formData, setFormData] = useState(null);
+  const [formData2, setFormData2] = useState(null);
+
   const [activeSchema, setActiveSchema] = useState(schemas[clusterstack]);
 
   const handleSwitch = (value: string) => {
@@ -101,8 +95,14 @@ export const FullForm = (schema: any) => {
                 </p>
               </CardContent>
             </Card>
-            <ClusterForm schema={schemas[clusterstack]} />
-            <VariablesForm schema={schemas[clusterstack]} />
+            <ClusterForm
+              schema={schemas[clusterstack]}
+              functions={[formData, setFormData]}
+            />
+            <VariablesForm
+              schema={schemas[clusterstack]}
+              functions={[formData2, setFormData2]}
+            />
           </div>
 
           <SyntaxHighlighter

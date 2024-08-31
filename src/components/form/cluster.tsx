@@ -29,16 +29,7 @@ import {
   RegistryFieldsType,
 } from "@rjsf/utils";
 import version from "@/components/form/fields";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-  SelectLabel,
-} from "@/components/ui/select";
+import { removeVariables } from "@/lib/utils";
 
 const uiSchema: UiSchema = {
   kind: { "ui:widget": "hidden" },
@@ -105,50 +96,20 @@ const uiSchema: UiSchema = {
   },
 };
 
-export const ClusterForm = (schema: any) => {
-  const cluster_schema = schema?.schema;
-  const list = Object.keys(cluster_schema).reverse();
-  //console.log(schema)
-
-  function removeVariables(schema: any) {
-    const newSchema = JSON.parse(JSON.stringify(schema));
-
-    if (
-      newSchema.properties &&
-      newSchema.properties.spec &&
-      newSchema.properties.spec.properties &&
-      newSchema.properties.spec.properties.topology &&
-      newSchema.properties.spec.properties.topology.properties
-    ) {
-      delete newSchema.properties.spec.properties.topology.properties.variables;
-    }
-
-    return newSchema;
-  }
+export const ClusterForm = (props: any) => {
+  const cluster_schema = props?.schema;
+  const [formData, setFormData] = props?.functions;
 
   const modifiedSchema = removeVariables(cluster_schema);
 
-  // Define the custom field components to register; here our "geo"
+  console.log("here:", modifiedSchema.properties.spec.properties.clusterNetwork.properties.services.properties.cidrBlocks)
+
   // custom field component
   const fields: RegistryFieldsType = { k8s_version: version };
 
-  const [clusterstack, setClusterStack] = useState("openstack-scs-1-30-v1");
-  const [formData, setFormData] = useState(null);
-  const [activeSchema, setActiveSchema] = useState(
-    cluster_schema[clusterstack],
-  );
-
-  const handleSwitch = (value: string) => {
-    setClusterStack(value);
-    setFormData(schemas[value]);
-    setActiveSchema(schemas[value]);
-  };
-
-  const yaml_out = stringify(formData).trimEnd(); // json to yaml conversion
-
   return (
     <>
-      <div className="space-x-8 mt-8">
+      <div className="space-x-8 mt-6">
         <div className=" mb-4">
           <div>
             <Card>

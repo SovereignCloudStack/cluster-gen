@@ -29,16 +29,10 @@ import {
   RegistryFieldsType,
 } from "@rjsf/utils";
 import version from "@/components/form/fields";
+import { transformVariables } from "@/lib/utils";
+import { formatTitle } from "@/lib/utils";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-  SelectLabel,
-} from "@/components/ui/select";
+import { transformDataStructure } from "@/lib/utils";
 
 import { getDefaultRegistry } from "@rjsf/core";
 import { ObjectFieldTemplateProps } from "@rjsf/utils";
@@ -62,7 +56,7 @@ const uiSchema: UiSchema = {
     "ui:description": "NodeCIDR is the OpenStack Subnet to be created",
   },
   apiserver_loadbalancer: {
-    "ui:title": "Apiserver Loadbalancer",
+    "ui:title": "API Server Loadbalancer",
     "ui:description":
       "Configure the loadbalancer that is placed in front of the apiserver",
   },
@@ -77,85 +71,33 @@ const registry = getDefaultRegistry();
 
 const ObjectFieldTemplate = registry.templates.ObjectFieldTemplate;
 
-export const VariablesForm = (schema: any) => {
-  const schema_variables = schema?.schema;
-  const list = Object.keys(schema_variables).reverse();
+export const VariablesForm = (props: any) => {
+  const variables_schema = props?.schema;
+  const list = Object.keys(variables_schema).reverse();
 
   const variables =
-    schema_variables.properties.spec.properties.topology.properties.variables;
+    variables_schema.properties.spec.properties.topology.properties.variables;
 
-  function transformData(input: any): any {
-    const result: any = {
-      properties: {},
-    };
+  const transformed = transformVariables(variables);
 
-    input.items.forEach((item: any) => {
-      if (item.type === "object" && item.properties) {
-        const name = item.properties.name.default;
-        const value = item.properties.value;
 
-        if (value.type === "array") {
-          result.properties[name] = {
-            title: formatTitle(name),
-            description: value.description,
-            type: value.type,
-            format: value.format,
-            default: value.default,
-            example: value.example,
-            items: { type: item.properties.value.items.type },
-          };
-        } else if (item.properties.value.type === "object") {
-          const subitems = item.properties.value.properties;
-          console.log(subitems);
+  const transformedData = transformDataStructure(variables.items);
+  console.log("transformed:", transformedData)
 
-          //input.items.forEach((item: any) => { console.log(item) })
-          //console.log(item.properties.value)
-          //const subitems = Array.from(item.properties.value.properties)
-          //console.log(subitems)
-          //subitems.forEach((subitem: any) => {
-          //console.log(subitems)
-          //})
-        } else {
-          result.properties[name] = {
-            title: formatTitle(name),
-            description: value.description,
-            type: value.type,
-            format: value.format,
-            default: value.default,
-            example: value.example,
-          };
-        }
-      }
-    });
 
-    return result;
-  }
 
-  function formatTitle(str: string): string {
-    return str
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  }
 
-  const transformed = transformData(variables);
-  //console.log(JSON.stringify(transformed, null, 2));
+
 
   const [clusterstack, setClusterStack] = useState("openstack-scs-1-30-v1");
   const [formData, setFormData] = useState(null);
   const [activeSchema, setActiveSchema] = useState(transformed);
 
-  const handleSwitch = (value: string) => {
-    setClusterStack(value);
-    setFormData(schemas[value]);
-    setActiveSchema(schemas[value]);
-  };
-
   const yaml_out = stringify(formData).trimEnd(); // json to yaml conversion
 
   return (
     <>
-      <div className="space-x-8 mt-8">
+      <div className="space-x-8 mt-6">
         <div className="mb-4">
           <div>
             <Card>
@@ -164,7 +106,7 @@ export const VariablesForm = (schema: any) => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <RJSForm
-                  schema={transformed}
+                  schema={transformedData}
                   uiSchema={uiSchema}
                   //formData={formData}
                   validator={validator}
