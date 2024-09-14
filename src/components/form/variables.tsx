@@ -80,14 +80,8 @@ export const VariablesForm = (props: any) => {
 
   const transformed = transformVariables(variables);
 
-
   const transformedData = transformDataStructure(variables.items);
-  console.log("transformed:", transformedData)
-
-
-
-
-
+  console.log("transformed:", transformedData);
 
   const [clusterstack, setClusterStack] = useState("openstack-scs-1-30-v1");
   const [formData, setFormData] = useState(null);

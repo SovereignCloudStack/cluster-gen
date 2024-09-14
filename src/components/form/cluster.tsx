@@ -102,7 +102,11 @@ export const ClusterForm = (props: any) => {
 
   const modifiedSchema = removeVariables(cluster_schema);
 
-  console.log("here:", modifiedSchema.properties.spec.properties.clusterNetwork.properties.services.properties.cidrBlocks)
+  console.log(
+    "here:",
+    modifiedSchema.properties.spec.properties.clusterNetwork.properties.services
+      .properties.cidrBlocks,
+  );
 
   // custom field component
   const fields: RegistryFieldsType = { k8s_version: version };

@@ -71,7 +71,8 @@ export function transformVariables(input: any): any {
   return result;
 }
 
-{/*
+{
+  /*
 export function formatTitle(str: string): string {
   return str
     .split("_")
@@ -80,22 +81,8 @@ export function formatTitle(str: string): string {
 }
 
 
-*/}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+*/
+}
 
 interface InputItem {
   properties: {
@@ -112,22 +99,24 @@ interface OutputProperties {
   [key: string]: any;
 }
 
-export function transformDataStructure(input: InputItem[]): { properties: OutputProperties } {
+export function transformDataStructure(input: InputItem[]): {
+  properties: OutputProperties;
+} {
   const output: { properties: OutputProperties } = { properties: {} };
 
   input.forEach((item) => {
     const key = item.properties.name.const;
     const value = item.properties.value;
 
-    if (typeof value === 'object' && value !== null) {
+    if (typeof value === "object" && value !== null) {
       if (Array.isArray(value)) {
         output.properties[key] = {
           title: formatTitle(key),
-          ...transformArrayProperty(value)
+          ...transformArrayProperty(value),
         };
       } else if (value.properties) {
         output.properties[key] = {
-          properties: transformNestedProperties(value.properties)
+          properties: transformNestedProperties(value.properties),
         };
       } else {
         output.properties[key] = transformSimpleProperty(key, value);
@@ -140,54 +129,46 @@ export function transformDataStructure(input: InputItem[]): { properties: Output
   return output;
 }
 
-function transformNestedProperties(properties: Record<string, any>): OutputProperties {
-  return Object.entries(properties).reduce((acc: OutputProperties, [propKey, propValue]) => {
-    acc[propKey] = transformSimpleProperty(propKey, propValue);
-    return acc;
-  }, {});
+function transformNestedProperties(
+  properties: Record<string, any>,
+): OutputProperties {
+  return Object.entries(properties).reduce(
+    (acc: OutputProperties, [propKey, propValue]) => {
+      acc[propKey] = transformSimpleProperty(propKey, propValue);
+      return acc;
+    },
+    {},
+  );
 }
 
 function transformSimpleProperty(key: string, value: any): any {
   return {
     title: formatTitle(key),
     ...Object.entries(value).reduce((acc: any, [propKey, propValue]) => {
-      if (propKey !== 'const' && propValue !== undefined) {
+      if (propKey !== "const" && propValue !== undefined) {
         acc[propKey] = propValue;
       }
       return acc;
-    }, {})
+    }, {}),
   };
 }
 
 function transformArrayProperty(value: any[]): any {
   const firstItem = value[0];
   return {
-    type: 'array',
-    items: typeof firstItem === 'object' ? { type: 'object' } : { type: typeof firstItem },
+    type: "array",
+    items:
+      typeof firstItem === "object"
+        ? { type: "object" }
+        : { type: typeof firstItem },
     default: value,
-    example: value
+    example: value,
   };
 }
 
 export function formatTitle(key: string): string {
-  return key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  return key
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
