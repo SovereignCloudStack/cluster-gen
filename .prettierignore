@@ -4,3 +4,5 @@
 chart/
 public/
 pnpm-lock.yaml
+.env
+.env.example

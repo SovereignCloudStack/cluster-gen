@@ -13,16 +13,15 @@ import { FullForm } from "@/components/form/form";
 
 async function getClusterClasses() {
   try {
-    const res = await fetch(
-      "https://capi-jsgen.moin.k8s.scs.community/namespaces",
-    ).then((response) => response.json());
+    const res = await fetch(process.env.API_URL + "/namespaces").then(
+      (response) => response.json(),
+    );
     const clusterstacks = res["kaas-playground0"];
 
     const unsorted = await Promise.all(
       clusterstacks.map((stack: any) =>
         fetch(
-          `https://capi-jsgen.moin.k8s.scs.community/clusterschema/kaas-playground0/` +
-            stack,
+          process.env.API_URL + "/clusterschema/kaas-playground0/" + stack,
         ).then((response) => response.json()),
       ),
     );

@@ -20,6 +20,11 @@ Web UI for creating Cluster objects based on SCS Cluster Stacks.
 
 ## Setup
 
+### Requirements
+
+- A running cluster in which you apply your ClusterClasses definitions
+- An instance of [capi-jsgen](https://github.com/SovereignCloudStack/capi-jsgen) that points to the kube-apiserver of the cluster
+
 ### Prerequisites
 
 - [pnpm](https://pnpm.io/installation)
