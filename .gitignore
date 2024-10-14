@@ -34,3 +34,6 @@ next-env.d.ts
 # wrong package managers
 package-lock.json
 yarn.lock
+
+# text editor
+.vscode/*
