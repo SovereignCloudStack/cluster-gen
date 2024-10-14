@@ -7,6 +7,19 @@ export const siteConfig = {
   links: {
     github: "https://github.com/SovereignCloudStack/cluster-gen",
   },
+  keywords: [
+    "Cluster Gen",
+    "cluster-gen",
+    "Cluster UI",
+    "Cluster Stacks",
+    "cluster-stacks",
+    "Cluster-API",
+    "ClusterClass",
+    "Sovereign Cloud Stack",
+    "SovereignCloudStack",
+    "SCS",
+    "Kubernetes",
+  ],
 };
 
 export type SiteConfig = typeof siteConfig;

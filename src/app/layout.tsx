@@ -14,16 +14,7 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(siteConfig.url),
   description: siteConfig.description,
-  keywords: [
-    "Cluster Gen",
-    "Cluster UI",
-    "Cluster Stacks",
-    "Cluster-API",
-    "ClusterClass",
-    "Sovereign Cloud Stack",
-    "Kubernetes",
-  ],
-
+  keywords: siteConfig.keywords,
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -57,14 +48,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
             fontSans.variable,
           )}
         >
-          {" "}
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-            {" "}
             <div className="relative flex min-h-screen flex-col bg-background">
               <Navbar />
               <main className="flex-1">{children}</main>

@@ -8,17 +8,18 @@ import {
   PageHeaderDescription,
   PageHeaderHeading,
 } from "@/components/page-header";
+import { ClusterForm } from "@/components/form/form";
 
-import { FullForm } from "@/components/form/form";
+import { modifySchemas } from "@/lib/utils";
 
 async function getClusterClasses() {
   try {
-    const res = await fetch(process.env.API_URL + "/namespaces").then(
-      (response) => response.json(),
-    );
-    const clusterstacks = res["kaas-playground0"];
+    const res: { [key: string]: string[] } = await fetch(
+      process.env.API_URL + "/namespaces",
+    ).then((response) => response.json());
+    const clusterstacks: string[] = res["kaas-playground0"];
 
-    const unsorted = await Promise.all(
+    const getAll: any[] = await Promise.all(
       clusterstacks.map((stack: any) =>
         fetch(
           process.env.API_URL + "/clusterschema/kaas-playground0/" + stack,
@@ -27,19 +28,25 @@ async function getClusterClasses() {
     );
 
     const options = { ignoreCase: true, reverse: false, depth: 2 };
-    const definitions = unsorted.map((stack: any) => sortJson(stack, options));
-    const schema = Object.fromEntries(
+
+    const definitions: Record<string, any>[] = modifySchemas(
+      getAll.map((stack: any) => sortJson(stack, options)),
+    );
+    const schemas: Record<string, Record<string, any>> = Object.fromEntries(
       clusterstacks.map((key: string, i: number) => [key, definitions[i]]),
     );
 
-    return schema;
+    return schemas;
   } catch (error) {
-    console.error("runtime error: ", error);
+    throw new Error("Failed to fetch cluster schemas");
   }
 }
 
 export default async function IndexPage() {
-  const schema = await getClusterClasses();
+  const schemas: Record<
+    string,
+    Record<string, any>
+  > = await getClusterClasses();
 
   return (
     <div className="container max-w-4xl relative">
@@ -49,7 +56,7 @@ export default async function IndexPage() {
           Generate ready to deploy Cluster objects based on Cluster Stacks
         </PageHeaderDescription>
         <PageActions>
-          <FullForm schema={schema} />
+          <ClusterForm schemas={schemas} />
         </PageActions>
       </PageHeader>
     </div>

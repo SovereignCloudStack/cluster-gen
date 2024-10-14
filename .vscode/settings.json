@@ -1,0 +1,11 @@
+{
+  "editor.codeLensFontFamily": "'IBM Plex Mono'",
+  "editor.inlineSuggest.fontFamily": "'IBM Plex Mono'",
+  "editor.inlayHints.fontFamily": "'IBM Plex Mono'",
+  "editor.experimentalInlineEdit.fontFamily": "'IBM Plex Mono'",
+  "debug.console.fontFamily": "'IBM Plex Mono'",
+  "scm.inputFontFamily": "'IBM Plex Mono'",
+  "terminal.integrated.fontFamily": "'IBM Plex Mono'",
+  "notebook.output.fontFamily": "'IBM Plex Mono'",
+  "markdown.preview.fontFamily": "'IBM Plex Mono'"
+}

@@ -6,7 +6,9 @@ import validator from "@rjsf/validator-ajv8";
 import { stringify } from "yaml";
 import SyntaxHighlighter from "react-syntax-highlighter";
 
-import SubmitButton from "./custom/SubmitButton";
+import SubmitButton from "@/components/form/custom/SubmitButton";
+
+import uiSchema from "@/components/form/uischema";
 
 import { Separator } from "@/components/ui/separator";
 import {
@@ -20,6 +22,8 @@ import {
 
 import { widgets } from "@/components/form/widgets";
 import { Form as RJSForm } from "@/components/form/custom";
+//import { Form as RJSForm } from "@/components/form/rjsf";
+
 import { MultiInput } from "@/components/form/multi-input";
 import { DownloadButton } from "@/components/form/download-button";
 import {
@@ -40,35 +44,97 @@ import {
   SelectLabel,
 } from "@/components/ui/select";
 
-import { ClusterForm } from "@/components/form/cluster";
-import { VariablesForm } from "@/components/form/variables";
+import { getDefaultRegistry } from "@rjsf/core";
+import { ObjectFieldTemplateProps } from "@rjsf/utils";
 
-export const FullForm = (schema: any) => {
-  const schemas = schema?.schema;
-  const list = Object.keys(schemas).reverse();
+import { convertYamlFormat } from "@/lib/utils";
+
+export const ClusterForm = (schemas: any) => {
+  const schema = schemas?.schemas;
+  const list = Object.keys(schema).reverse();
 
   const [clusterstack, setClusterStack] = useState("openstack-scs-1-30-v1");
   const [formData, setFormData] = useState(null);
-  const [formData2, setFormData2] = useState(null);
-
-  const [activeSchema, setActiveSchema] = useState(schemas[clusterstack]);
+  const [activeSchema, setActiveSchema] = useState(schema[clusterstack]);
 
   const handleSwitch = (value: string) => {
     setClusterStack(value);
-    setFormData(schemas[value]);
-    setActiveSchema(schemas[value]);
+    setFormData(schema[value]);
+    setActiveSchema(schema[value]);
   };
 
-  const yaml_out = stringify(formData).trimEnd(); // json to yaml conversion
+  const yaml_out = convertYamlFormat(stringify(formData)); // json to yaml conversion
+
+  // custom field component
+  const fields: RegistryFieldsType = { k8s_version: version };
+
+  // CUSTOM GROUPS (Cluster, Machines, Variables)
+  const registry = getDefaultRegistry();
+  const ObjectFieldTemplate = registry.templates.ObjectFieldTemplate;
+  const groups = [
+    {
+      title: "cluster",
+      fields: [
+        "metadata.properties.name",
+        "metadata.properties.namespace",
+        "version",
+      ],
+    },
+    //{ title: "machines", fields: "spec.variables" },
+    { title: "variables", fields: "spec.variables" },
+  ];
+
+  const getPropsForGroup = (
+    group: any,
+    props: ObjectFieldTemplateProps,
+  ): ObjectFieldTemplateProps => {
+    2;
+    console.log(props.properties);
+    console.log(group.fields);
+    console.log(props.properties.filter((p) => console.log(p)));
+
+    // More filtering might be required for propper functionality, this is just a POC
+    return {
+      ...props,
+      // properties: props.properties.filter((p) => group.fields.includes(p.name)),
+    };
+  };
+
+  const ObjectFieldTemplateWrapper = (props: ObjectFieldTemplateProps) => {
+    return (
+      <>
+        {groups.map((group) => {
+          const childProps = getPropsForGroup(group, props);
+          console.log(group);
+          return (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="">
+                    {group.title.charAt(0).toUpperCase() + group.title.slice(1)}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <ObjectFieldTemplate key={group.title} {...childProps} />
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          );
+        })}
+      </>
+    );
+  };
 
   return (
     <>
       <div className="flex space-x-8 mt-8">
         <div className="grid grid-row-cols grid-cols-2 gap-12 mb-4">
-          <div className="">
+          <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="">Cluster Stack</CardTitle>
+                <CardTitle>Cluster Stack</CardTitle>
               </CardHeader>
               <CardContent>
                 <Select
@@ -95,14 +161,28 @@ export const FullForm = (schema: any) => {
                 </p>
               </CardContent>
             </Card>
-            <ClusterForm
-              schema={schemas[clusterstack]}
-              functions={[formData, setFormData]}
-            />
-            <VariablesForm
-              schema={schemas[clusterstack]}
-              functions={[formData2, setFormData2]}
-            />
+            <Card>
+              <CardHeader>
+                <CardTitle>Cluster</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <RJSForm
+                  schema={schema[clusterstack]} // schemas[clusterstack]
+                  uiSchema={uiSchema}
+                  formData={formData}
+                  validator={validator}
+                  fields={fields}
+                  widgets={widgets}
+                  onChange={(e) => setFormData(e.formData)}
+                  templates={{
+                    ButtonTemplates: { SubmitButton },
+                    //ObjectFieldTemplate: ObjectFieldTemplateWrapper,
+                  }}
+                >
+                  {/*<DownloadButton formStatus={validator} formData={formData}/> */}
+                </RJSForm>
+              </CardContent>
+            </Card>
           </div>
 
           <SyntaxHighlighter

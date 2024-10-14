@@ -1,88 +1,13 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { GeistSans } from "geist/font/sans";
+import * as yaml from "js-yaml";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export const fontSans = GeistSans;
-
-export function removeVariables(schema: any) {
-  const newSchema = JSON.parse(JSON.stringify(schema));
-
-  if (
-    newSchema.properties &&
-    newSchema.properties.spec &&
-    newSchema.properties.spec.properties &&
-    newSchema.properties.spec.properties.topology &&
-    newSchema.properties.spec.properties.topology.properties
-  ) {
-    delete newSchema.properties.spec.properties.topology.properties.variables;
-  }
-
-  return newSchema;
-}
-
-export function transformVariables(input: any): any {
-  const result: any = {
-    properties: {},
-  };
-
-  input.items.forEach((item: any) => {
-    if (item.type === "object" && item.properties) {
-      const name = item.properties.name.default;
-      const value = item.properties.value;
-
-      if (value.type === "array") {
-        result.properties[name] = {
-          title: formatTitle(name),
-          description: value.description,
-          type: value.type,
-          format: value.format,
-          default: value.default,
-          example: value.example,
-          items: { type: item.properties.value.items.type },
-        };
-      } else if (item.properties.value.type === "object") {
-        const subitems = item.properties.value.properties;
-        console.log(subitems);
-
-        //input.items.forEach((item: any) => { console.log(item) })
-        //console.log(item.properties.value)
-        //const subitems = Array.from(item.properties.value.properties)
-        //console.log(subitems)
-        //subitems.forEach((subitem: any) => {
-        //console.log(subitems)
-        //})
-      } else {
-        result.properties[name] = {
-          title: formatTitle(name),
-          description: value.description,
-          type: value.type,
-          format: value.format,
-          default: value.default,
-          example: value.example,
-        };
-      }
-    }
-  });
-
-  return result;
-}
-
-{
-  /*
-export function formatTitle(str: string): string {
-  return str
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-
-*/
-}
 
 interface InputItem {
   properties: {
@@ -99,7 +24,7 @@ interface OutputProperties {
   [key: string]: any;
 }
 
-export function transformDataStructure(input: InputItem[]): {
+function transformDataStructure(input: InputItem[]): {
   properties: OutputProperties;
 } {
   const output: { properties: OutputProperties } = { properties: {} };
@@ -166,9 +91,96 @@ function transformArrayProperty(value: any[]): any {
   };
 }
 
-export function formatTitle(key: string): string {
+function updateArrayObjects<T>(
+  array: T[],
+  key: string,
+  modifier: (currentValue: any, object: T) => any,
+): T[] {
+  return array.map((obj) => {
+    const newObj = JSON.parse(JSON.stringify(obj)); // Deep clone
+    const keys = key.split(".");
+    let current: any = newObj;
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (current[keys[i]] === undefined) {
+        current[keys[i]] = {};
+      }
+      current = current[keys[i]];
+    }
+
+    const lastKey = keys[keys.length - 1];
+    current[lastKey] = modifier(current[lastKey], newObj);
+
+    return newObj;
+  });
+}
+
+function formatTitle(key: string): string {
+  const fullCaps = ["id", "ip", "ssh", "dns", "cidr", "mtu", "oidc"];
+  const customSpelling: { [key: string]: string } = {
+    openstack: "OpenStack",
+    apiserver: "API Server",
+  };
+
   return key
     .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+    .map((word) => word.toLowerCase())
+    .join(" ")
+    .replace(/\b\w+\b/g, (match) => {
+      if (match in customSpelling) {
+        return customSpelling[match];
+      }
+      if (fullCaps.includes(match)) {
+        return match.toUpperCase();
+      }
+      return match.charAt(0).toUpperCase() + match.slice(1);
+    });
+}
+
+export function modifySchemas(definitions: object[]) {
+  return updateArrayObjects(
+    definitions,
+    "properties.spec.properties.topology.properties.variables",
+    (variables, key) => {
+      return transformDataStructure(variables.items);
+    },
+  );
+}
+
+type GenericObject = { [key: string]: any };
+
+function convertVariablesFormat(obj: GenericObject): GenericObject {
+  if (typeof obj !== "object" || obj === null) {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(convertVariablesFormat);
+  }
+
+  const result: GenericObject = {};
+
+  for (const [key, value] of Object.entries(obj)) {
+    if (
+      key === "variables" &&
+      typeof value === "object" &&
+      !Array.isArray(value)
+    ) {
+      result[key] = Object.entries(value).map(([name, val]) => ({
+        name,
+        value: val,
+      }));
+    } else {
+      result[key] = convertVariablesFormat(value);
+    }
+  }
+
+  return result;
+}
+
+// TODO: Types are not correctly converted
+export function convertYamlFormat(input: string): string {
+  const parsedYaml = yaml.load(input) as GenericObject;
+  const convertedYaml = convertVariablesFormat(parsedYaml);
+  return yaml.dump(convertedYaml, { quotingType: '"' });
 }

@@ -30,7 +30,8 @@ export default function SubmitButton<
   const linkRef = useRef(null);
 
   const handleDownload = async () => {
-    const blob = new Blob(uiS, {
+    const test = ["1"];
+    const blob = new Blob(test, {
       type: "application/yaml",
     });
     const url = window.URL.createObjectURL(blob);

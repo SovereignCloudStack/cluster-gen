@@ -7,7 +7,7 @@ Alternatively you can simply follow the setup instructions outlined below to dep
 
 ### Requirements
 
-- A running cluster in which you apply your ClusterClasses definitions
+- A running cluster in which you apply your ClusterClass definitions
 - An instance of [capi-jsgen](https://github.com/SovereignCloudStack/capi-jsgen) that points to the kube-apiserver of the cluster
 
 ### Prerequisites
