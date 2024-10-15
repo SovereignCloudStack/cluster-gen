@@ -15,7 +15,7 @@ spec:
         app: cluster-gen
     spec:
       containers:
-      - image: {{ .Values.image }}
-        name: cluster-gen
-        ports:
-        - containerPort: 3000
+        - image: { { .Values.image } }
+          name: cluster-gen
+          ports:
+            - containerPort: 3000
