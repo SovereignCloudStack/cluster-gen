@@ -70,7 +70,7 @@ export default function ObjectFieldTemplate<
         {properties.map((element: any, index: number) => (
           <div
             key={index}
-            className={`${element.hidden ? "hidden" : ""} mb-2.5 flex`}
+            className={`${element.hidden ? "hidden" : ""} mb-3 flex`}
           >
             <div className="w-full"> {element.content}</div>
           </div>

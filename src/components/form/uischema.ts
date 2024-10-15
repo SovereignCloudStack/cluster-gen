@@ -4,6 +4,7 @@ const uiSchema: UiSchema = {
   kind: { "ui:widget": "hidden" },
   apiVersion: { "ui:widget": "hidden" },
   metadata: {
+    "ui:title": "",
     name: {
       "ui:title": "Cluster name",
       "ui:description": "Name of your Cluster",
@@ -14,10 +15,14 @@ const uiSchema: UiSchema = {
     labels: { "ui:widget": "hidden" },
   },
   spec: {
+    "ui:title": "",
     clusterNetwork: {
+      "ui:title": "",
       serviceDomain: { "ui:widget": "hidden" },
       services: {
+        "ui:title": "",
         cidrBlocks: {
+          "ui:title": "",
           items: {
             "ui:title": "Service CIDRs",
             "ui:description": "CIDR addresses for all services in the cluster",
@@ -25,7 +30,9 @@ const uiSchema: UiSchema = {
         },
       },
       pods: {
+        "ui:title": "",
         cidrBlocks: {
+          "ui:title": "",
           items: {
             "ui:title": "Pod CIDRs",
             "ui:description": "CIDR addresses for all pods in the cluster",
@@ -34,13 +41,16 @@ const uiSchema: UiSchema = {
       },
     },
     topology: {
+      "ui:title": "",
       class: { "ui:widget": "hidden" },
       version: {
         "ui:title": "Kubernetes version",
         "ui:description": "Select which Kubernetes minor version you want",
         "ui:field": "k8s_version",
+        //"ui:widget": "select",
       },
       controlPlane: {
+        "ui:title": "",
         replicas: {
           "ui:title": "Control plane replicas",
           "ui:description": "How many control plane replicas you want",
@@ -48,6 +58,7 @@ const uiSchema: UiSchema = {
         },
       },
       workers: {
+        "ui:title": "",
         machineDeployments: {
           items: {
             name: { "ui:widget": "hidden" },
@@ -62,14 +73,17 @@ const uiSchema: UiSchema = {
         },
       },
       variables: {
+        "ui:title": "",
         external_id: { "ui:widget": "hidden" },
         controller_root_disk: {
           "ui:title": "Controller Disk Size",
           "ui:description": "Root disk size in GiB for control-plane nodes",
+          "ui:widget": "updown",
         },
         worker_root_disk: {
           "ui:title": "Worker Disk Size",
           "ui:description": "Root disk size in GiB for worker nodes",
+          "ui:widget": "updown",
         },
         ssh_key: {
           "ui:title": "SSH Key",
@@ -94,7 +108,13 @@ const uiSchema: UiSchema = {
           "ui:description":
             "Configure the loadbalancer solution for your services inside your cluster.",
         },
+        certSANs: {
+          "ui:title": "CertSANs",
+          "ui:description":
+            "CertSANs sets extra Subject Alternative Names for the API Server signing cert",
+        },
         oidc_config: {
+          "ui:title": "OIDC Config",
           username_claim: {
             "ui:description": "JWT claim to use as the user name.",
           },
@@ -114,12 +134,12 @@ const uiSchema: UiSchema = {
         controlPlaneAvailabilityZones: {
           "ui:title": "Controlplane Availability Zones",
           "ui:description":
-            "ControlPlaneAvailabilityZones is the set of availability zones which control plane machines may be deployed to.",
+            "The set of availability zones which control plane machines may be deployed to.",
         },
         controlPlaneOmitAvailabilityZone: {
           "ui:title": "Controlplane Omit Availability Zones",
           "ui:description":
-            "ControlPlaneOmitAvailabilityZone causes availability zone to be omitted when creating control plane nodes, allowing the Nova scheduler to make a decision on which availability zone to use based on other scheduling constraints.",
+            "Causes availability zone to be omitted when creating control plane nodes, allowing the Nova scheduler to make a decision on which availability zone to use based on other scheduling constraints.",
           "ui:widget": "select",
         },
       },

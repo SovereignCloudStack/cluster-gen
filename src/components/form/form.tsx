@@ -53,14 +53,14 @@ export const ClusterForm = (schemas: any) => {
   const schema = schemas?.schemas;
   const list = Object.keys(schema).reverse();
 
-  const [clusterstack, setClusterStack] = useState("openstack-scs-1-30-v1");
+  const [clusterstack, setClusterStack] = useState(list[0]);
   const [formData, setFormData] = useState(null);
-  const [activeSchema, setActiveSchema] = useState(schema[clusterstack]);
+  //const [activeSchema, setActiveSchema] = useState(schema[clusterstack]);
 
   const handleSwitch = (value: string) => {
     setClusterStack(value);
     setFormData(schema[value]);
-    setActiveSchema(schema[value]);
+    //setActiveSchema(schema[value]);
   };
 
   const yaml_out = convertYamlFormat(stringify(formData)); // json to yaml conversion
@@ -149,7 +149,7 @@ export const ClusterForm = (schemas: any) => {
                       <SelectItem
                         key={item}
                         value={item.toString()}
-                        defaultValue="openstack-scs-1-30-v1"
+                        defaultValue={list[0]}
                       >
                         {item}
                       </SelectItem>
@@ -167,13 +167,12 @@ export const ClusterForm = (schemas: any) => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <RJSForm
-                  schema={schema[clusterstack]} // schemas[clusterstack]
+                  schema={schema[clusterstack]}
                   uiSchema={uiSchema}
-                  formData={formData}
                   validator={validator}
                   fields={fields}
                   widgets={widgets}
-                  onChange={(e) => setFormData(e.formData)}
+                  onChange={(e: any) => setFormData(e.formData)}
                   templates={{
                     ButtonTemplates: { SubmitButton },
                     //ObjectFieldTemplate: ObjectFieldTemplateWrapper,

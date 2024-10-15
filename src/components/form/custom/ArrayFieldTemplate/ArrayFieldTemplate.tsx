@@ -61,13 +61,15 @@ export default function ArrayFieldTemplate<
             required={required}
             registry={registry}
           />
-          <ArrayFieldDescriptionTemplate
-            idSchema={idSchema}
-            description={uiOptions.description || schema.description}
-            schema={schema}
-            uiSchema={uiSchema}
-            registry={registry}
-          />
+          <div className="text-sm text-muted-foreground">
+            <ArrayFieldDescriptionTemplate
+              idSchema={idSchema}
+              description={uiOptions.description || schema.description}
+              schema={schema}
+              uiSchema={uiSchema}
+              registry={registry}
+            />
+          </div>
           <div className="m-0 w-full p-0">
             {items &&
               items.map(

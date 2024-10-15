@@ -44,8 +44,8 @@ export default function BaseInputTemplate<
     onFocus(id, value);
 
   const inputClass = `
-    border rounded-lg p-2 focus:border-primary focus:outline-none w-full bg-background
-    ${rawErrors.length > 0 ? "border-red-500" : "border-muted-foreground"}
+    border rounded-lg p-2 focus:border-primary focus:outline-none w-full bg-background text-sm
+    ${rawErrors.length > 0 ? "border-red-500" : "border-border"}
   `;
 
   return (

@@ -24,16 +24,3 @@ export default function TitleField<
     </>
   );
 }
-
-{
-  /*
-    TODO: disable this with global ui:options
-
-    <div id={id} className="my-1">
-      <h5 className="mb-2 text-xl font-medium leading-tight">
-        {uiOptions.title || title}
-      </h5>
-      <hr className="my-4 border-t border-muted" />
-    </div>
-    */
-}

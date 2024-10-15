@@ -137,16 +137,6 @@ function formatTitle(key: string): string {
     });
 }
 
-export function modifySchemas(definitions: object[]) {
-  return updateArrayObjects(
-    definitions,
-    "properties.spec.properties.topology.properties.variables",
-    (variables, key) => {
-      return transformDataStructure(variables.items);
-    },
-  );
-}
-
 type GenericObject = { [key: string]: any };
 
 function convertVariablesFormat(obj: GenericObject): GenericObject {
@@ -182,5 +172,68 @@ function convertVariablesFormat(obj: GenericObject): GenericObject {
 export function convertYamlFormat(input: string): string {
   const parsedYaml = yaml.load(input) as GenericObject;
   const convertedYaml = convertVariablesFormat(parsedYaml);
-  return yaml.dump(convertedYaml, { quotingType: '"' });
+  return yaml.dump(convertedYaml, { quotingType: '"' }).trimEnd();
+}
+
+interface EnumField {
+  fieldName: string;
+  enumValues: string[];
+  type?: string;
+}
+
+function addEnumToFields(variables: any, fields: EnumField[]) {
+  if (variables && variables.properties) {
+    fields.forEach((field) => {
+      if (variables.properties[field.fieldName]) {
+        variables.properties[field.fieldName] = {
+          ...variables.properties[field.fieldName],
+          enum: field.enumValues,
+          type: field.type || "string",
+        };
+      }
+    });
+  }
+  return variables;
+}
+
+const variableFieldsToModify: EnumField[] = [
+  {
+    fieldName: "controller_flavor",
+    enumValues: ["SCS-2V-4-20s", "SCS-2V-8-20s"],
+    type: "string",
+  },
+  {
+    fieldName: "worker_flavor",
+    enumValues: ["SCS-2V-4-20s", "SCS-2V-8-20s"],
+    type: "string",
+  },
+  {
+    fieldName: "apiserver_loadbalancer",
+    enumValues: ["none", "octavia-amphora", "octavia-ovn", "kube-vip"],
+    type: "string",
+  },
+  {
+    fieldName: "workload_loadbalancer",
+    enumValues: ["none", "octavia-amphora", "octavia-ovn", "yawol"],
+    type: "string",
+  },
+  {
+    fieldName: "version",
+    enumValues: ["none", "octavia-amphora", "octavia-ovn", "yawol"],
+    type: "string",
+  },
+];
+
+export function modifySchemas(
+  definitions: object[],
+  fieldsToModify: EnumField[] = variableFieldsToModify,
+) {
+  return updateArrayObjects(
+    definitions,
+    "properties.spec.properties.topology.properties.variables",
+    (variables, key) => {
+      const transformedVariables = transformDataStructure(variables.items);
+      return addEnumToFields(transformedVariables, fieldsToModify);
+    },
+  );
 }

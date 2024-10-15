@@ -60,7 +60,7 @@ export default function SelectWidget<
       multiple={multiple}
       disabled={disabled || readonly}
       autoFocus={autofocus}
-      className={`w-full border border-muted-foreground bg-background p-2 focus:border-primary focus:outline-none
+      className={`flex h-10 w-full items-center justify-between rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1
       ${rawErrors.length > 0 ? "border-red-500" : "border-muted"}
       `}
       onBlur={

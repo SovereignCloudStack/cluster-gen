@@ -35,8 +35,12 @@ export default class version extends React.Component<FieldProps> {
 
   render() {
     const k8s_versions = {
-      "1.30": ["1.30.3", "1.30.2", "1.30.1", "1.30.0"],
+      "1.31": ["1.31.1", "1.31.0"],
+      "1.30": ["1.30.5", "1.30.4", "1.30.3", "1.30.2", "1.30.1", "1.30.0"],
       "1.29": [
+        "1.29.9",
+        "1.29.8",
+        "1.29.7",
         "1.29.6",
         "1.29.5",
         "1.29.4",
@@ -46,6 +50,9 @@ export default class version extends React.Component<FieldProps> {
         "1.29.0",
       ],
       "1.28": [
+        "1.28.14",
+        "1.28.13",
+        "1.28.12",
         "1.28.11",
         "1.28.10",
         "1.28.9",
@@ -66,7 +73,7 @@ export default class version extends React.Component<FieldProps> {
         <label className="text-m font-medium leading-none tracking-tight mb-4 inline-block">
           Kubernetes version
         </label>
-        <Select onValueChange={this.onChange("version")} defaultValue="1.29.3">
+        <Select onValueChange={this.onChange("version")} defaultValue="1.30.0">
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
@@ -77,7 +84,7 @@ export default class version extends React.Component<FieldProps> {
                 <SelectItem
                   key={item}
                   value={item.toString()}
-                  defaultValue="1.30.3"
+                  defaultValue="1.30.0"
                 >
                   {item}
                 </SelectItem>
@@ -89,7 +96,7 @@ export default class version extends React.Component<FieldProps> {
                 <SelectItem
                   key={item}
                   value={item.toString()}
-                  defaultValue="1.29.6"
+                  defaultValue="1.29.9"
                 >
                   {item}
                 </SelectItem>
@@ -101,7 +108,7 @@ export default class version extends React.Component<FieldProps> {
                 <SelectItem
                   key={item}
                   value={item.toString()}
-                  defaultValue="1.28.11"
+                  defaultValue="1.28.14"
                 >
                   {item}
                 </SelectItem>
