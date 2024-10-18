@@ -8,13 +8,13 @@ Alternatively you can simply follow the setup instructions outlined below to dep
 ### Requirements
 
 - A running cluster in which you apply your ClusterClass definitions
-- An instance of [capi-jsgen](https://github.com/SovereignCloudStack/capi-jsgen) that points to the kube-apiserver of the cluster
-
-### Prerequisites
-
-- [pnpm](https://pnpm.io/installation)
+- An instance of [capi-jsgen](https://github.com/SovereignCloudStack/capi-jsgen) running in your cluster
 
 ### Develop locally
+
+#### Prerequisites
+
+- [pnpm](https://pnpm.io/installation)
 
 ```bash
 pnpm i
