@@ -1,38 +1,75 @@
+export const revalidate = 1800; // revalidate every 30mins
+
+import sortJson from "sort-json";
+
 import {
   PageActions,
   PageHeader,
   PageHeaderDescription,
   PageHeaderHeading,
 } from "@/components/page-header";
+import { ClusterForm } from "@/components/form/form";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { modifySchemas } from "@/lib/utils";
+import { auth } from "@/app/auth";
+import type { DexSession } from "@/lib/types";
 
-import { ClusterStackForm } from "@/components/clusterstack-form";
-import { ClusterForm } from "@/components/cluster-form";
+async function getClusterClasses() {
+  try {
+    const res: { [key: string]: string[] } = await fetch(
+      process.env.API_URL + "/namespaces",
+    ).then((response) => response.json());
+    const clusterstacks: string[] = res["kaas-playground0"];
 
-export default function IndexPage() {
+    const getAll: any[] = await Promise.all(
+      clusterstacks.map((stack: any) =>
+        fetch(
+          process.env.API_URL + "/clusterschema/kaas-playground0/" + stack,
+        ).then((response) => response.json()),
+      ),
+    );
+
+    const options = { ignoreCase: true, reverse: false, depth: 2 };
+
+    const definitions: Record<string, any>[] = modifySchemas(
+      getAll.map((stack: any) => sortJson(stack, options)),
+    );
+    const schemas: Record<string, Record<string, any>> = Object.fromEntries(
+      clusterstacks.map((key: string, i: number) => [key, definitions[i]]),
+    );
+
+    return schemas;
+  } catch (error) {
+    throw new Error("Failed to fetch cluster schemas");
+  }
+}
+
+export default async function IndexPage() {
+  const schemas: Record<
+    string,
+    Record<string, any>
+  > = await getClusterClasses();
+  const session = (await auth()) as DexSession;
+
+  if (session?.user) {
+    session.user = {
+      username: session?.profile?.preferred_username,
+      name: session.user.name,
+      email: session.user.email,
+      groups: session.profile?.groups,
+    };
+    delete session.profile;
+  }
+
   return (
-    <div className="container relative">
+    <div className="container max-w-4xl relative">
       <PageHeader>
         <PageHeaderHeading>Cluster Gen</PageHeaderHeading>
         <PageHeaderDescription>
-          Generate Cluster objects based on SCS Cluster Stacks
+          Generate ready to deploy Cluster objects based on Cluster Stacks
         </PageHeaderDescription>
         <PageActions>
-          <Tabs defaultValue="clusterstacks" className="w-[2000px] mt-2">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="clusterstacks">Cluster Stack</TabsTrigger>
-              <TabsTrigger value="cluster">Cluster</TabsTrigger>
-            </TabsList>
-            <div className="w-full space-x-8 mt-14">
-              <TabsContent value="clusterstacks">
-                <ClusterStackForm />
-              </TabsContent>
-              <TabsContent value="cluster">
-                <ClusterForm />
-              </TabsContent>
-            </div>
-          </Tabs>
+          <ClusterForm schemas={schemas} />
         </PageActions>
       </PageHeader>
     </div>

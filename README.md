@@ -1,20 +1,12 @@
 # Cluster Gen
 
-Proof of concept Web UI for creating Cluster objects based on SCS Cluster Stacks.
+Web UI for creating Cluster objects based on SCS Cluster Stacks.
 
 ## Workflow
 
-- Read cluster stack and clusterclass templates
-- Render/populate yaml in live editor with good defaults
-- On "Download": perform form validation, create yaml file and open up download prompt (all client-side)
-
-## Limitations (to be implemented)
-
-- ClusterClass and Cluster Stack templates are [hard-coded](src/components/cluster-form.tsx#L90) and limited to the `scs/alpha` Cluster Stacks
-  - Ideally they should reflect the current state of each specific Cluster Stack (e.g. metal3/kamaji)
-  - Possbile solution: Either fetch and parse the ClusterClasses using the GitHub API or use the schema provided by [kube-apiserver](https://github.com/SovereignCloudStack/cluster-gen/issues/3)
-- Cluster Stack releases are [hard-coded](src/components/clusterstack-form.tsx#L116)
-  - Possible solution: Use GitHub API to get releases
+- Read ClusterClass schema definitions from the kube-apiserver of the moin-cluster via the API provided by [capi-jsgen](https://github.com/SovereignCloudStack/capi-jsgen)
+- Render yaml form with live editor
+- On Download: perform form validation, create yaml file and open up download prompt
 
 ## Built with
 
@@ -23,14 +15,21 @@ Proof of concept Web UI for creating Cluster objects based on SCS Cluster Stacks
 - [pnpm](https://pnpm.io/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [shadcn/ui](https://ui.shadcn.com/)
+- [react-jsonschema-form](https://github.com/rjsf-team/react-jsonschema-form)
+- [capi-jsgen](https://github.com/SovereignCloudStack/capi-jsgen)
 
 ## Setup
 
-### Prerequisites
+### Requirements
 
-- [pnpm](https://pnpm.io/installation)
+- A running cluster in which you apply your ClusterClass definitions
+- An instance of [capi-jsgen](https://github.com/SovereignCloudStack/capi-jsgen) running in your cluster
 
 ### Develop locally
+
+#### Prerequisites
+
+- [pnpm](https://pnpm.io/installation)
 
 ```bash
 pnpm i
@@ -49,4 +48,17 @@ pnpm start
 ```bash
 docker build -t cluster-gen .
 docker run -p 3000:3000 cluster-gen
+```
+
+#### Helm
+
+Inside `charts/` you can find a minimal chart to deploy Cluster Gen on Kubernetes with a Service and an Ingress.
+
+### Release
+
+A new [release](https://github.com/SovereignCloudStack/cluster-gen/releases) and build is [triggered](https://github.com/SovereignCloudStack/cluster-gen/blob/main/.github/workflows/release.yml) by a version tag push on main
+
+```bash
+git tag v0.0.x
+git push origin v0.0.x
 ```
