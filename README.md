@@ -31,7 +31,6 @@ Web UI for creating Cluster objects based on SCS Cluster Stacks.
 
 - [pnpm](https://pnpm.io/installation)
 
-
 ```bash
 pnpm i
 pnpm dev

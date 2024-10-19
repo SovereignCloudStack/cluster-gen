@@ -2,10 +2,11 @@ import "./globals.css";
 import { Metadata, Viewport } from "next";
 import { cn } from "@/lib/utils";
 import { fontSans } from "@/lib/utils";
-import { ThemeProvider } from "@/components/theme-provider";
 import { siteConfig } from "@/config/site";
-import { Navbar } from "@/components/navbar";
+
+import { ThemeProvider } from "@/components/theme-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
+import Header from "@/components/header";
 
 export const metadata: Metadata = {
   title: {
@@ -55,7 +56,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             disableTransitionOnChange
           >
             <div className="relative flex min-h-screen flex-col bg-background">
-              <Navbar />
+              <Header />
               <main className="flex-1">{children}</main>
             </div>
           </ThemeProvider>

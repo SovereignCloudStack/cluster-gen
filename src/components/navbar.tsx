@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-
 import { cn } from "@/lib/utils";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -52,49 +51,44 @@ const Icons = {
   ),
 };
 
-export function Navbar() {
+export function Navbar({ children }: { children?: React.ReactNode }) {
   return (
     <>
-      <header className="sticky top-0 z-50 border-b transition-colors border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <nav className="mx-auto flex justify-between max-w-[1440px] max-w-container flex-row items-center gap-6 px-4 h-14">
-          <Link
-            target="_blank"
-            href="https://scs.community"
-            aria-label="SovereignCloudStack"
-            className="flex items-center -m-2 gap-1 p-2"
-          >
-            <Icons.logo className="h-6 w-6" />
-            <span className="hidden font-bold ml-4 mt-1">SCS</span>
-          </Link>
-          <Link
-            target="_blank"
-            href="https://github.com/SovereignCloudStack/cluster-stacks"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            Cluster Stacks
-          </Link>
-          <div className="md:gap-2 inline-flex">
-            <ThemeToggle />
-            <Link
-              href={siteConfig.links.github}
-              target="_blank"
-              rel="noreferrer"
+      <nav className="mx-auto flex justify-between max-w-[1440px] max-w-container flex-row items-center gap-6 px-4 h-14">
+        <Link
+          target="_blank"
+          href="https://scs.community"
+          aria-label="SovereignCloudStack"
+          className="flex items-center -m-2 gap-1 p-2"
+        >
+          <Icons.logo className="h-6 w-6" />
+          <span className="hidden font-bold ml-4 mt-1">SCS</span>
+        </Link>
+        <Link
+          target="_blank"
+          href="https://github.com/SovereignCloudStack/cluster-stacks"
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
+          Cluster Stacks
+        </Link>
+        <div className="md:gap-3 inline-flex items-center">
+          <ThemeToggle />
+          <Link href={siteConfig.links.github} target="_blank" rel="noreferrer">
+            <div
+              className={cn(
+                buttonVariants({
+                  variant: "ghost",
+                }),
+                "h-8 w-8 px-0",
+              )}
             >
-              <div
-                className={cn(
-                  buttonVariants({
-                    variant: "ghost",
-                  }),
-                  "h-8 w-8 px-0",
-                )}
-              >
-                <Icons.gitHub className="h-5 w-5" />
-                <span className="sr-only">GitHub</span>
-              </div>
-            </Link>
-          </div>
-        </nav>
-      </header>
+              <Icons.gitHub className="h-6 w-6" />
+              <span className="sr-only">GitHub</span>
+            </div>
+          </Link>
+          {children}
+        </div>
+      </nav>
     </>
   );
 }

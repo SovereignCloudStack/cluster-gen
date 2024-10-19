@@ -11,6 +11,8 @@ import {
 import { ClusterForm } from "@/components/form/form";
 
 import { modifySchemas } from "@/lib/utils";
+import { auth } from "@/app/auth";
+import type { DexSession } from "@/lib/types";
 
 async function getClusterClasses() {
   try {
@@ -47,6 +49,17 @@ export default async function IndexPage() {
     string,
     Record<string, any>
   > = await getClusterClasses();
+  const session = (await auth()) as DexSession;
+
+  if (session?.user) {
+    session.user = {
+      username: session?.profile?.preferred_username,
+      name: session.user.name,
+      email: session.user.email,
+      groups: session.profile?.groups,
+    };
+    delete session.profile;
+  }
 
   return (
     <div className="container max-w-4xl relative">
