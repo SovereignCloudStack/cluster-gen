@@ -22,6 +22,13 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
+ENV API_URL https://capi-jsgen.moin.k8s.scs.community
+
+#ENV AUTH_SECRET
+#ENV AUTH_TRUST_HOST TRUE
+#ENV DEX_URL 
+#ENV DEX_CLIENT_ID
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 

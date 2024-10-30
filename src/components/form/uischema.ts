@@ -6,11 +6,12 @@ const uiSchema: UiSchema = {
   metadata: {
     "ui:title": "",
     name: {
-      "ui:title": "Cluster name",
+      "ui:title": "Name",
       "ui:description": "Name of your Cluster",
     },
     namespace: {
       "ui:description": "Namespace in which to deploy the Cluster",
+      "ui:widget": "select",
     },
     labels: { "ui:widget": "hidden" },
   },
@@ -22,7 +23,7 @@ const uiSchema: UiSchema = {
       services: {
         "ui:title": "",
         cidrBlocks: {
-          "ui:title": "",
+          "ui:field": "",
           items: {
             "ui:title": "Service CIDRs",
             "ui:description": "CIDR addresses for all services in the cluster",
@@ -44,15 +45,14 @@ const uiSchema: UiSchema = {
       "ui:title": "",
       class: { "ui:widget": "hidden" },
       version: {
-        "ui:title": "Kubernetes version",
+        "ui:title": "Kubernetes Version",
         "ui:description": "Select which Kubernetes minor version you want",
-        "ui:field": "k8s_version",
-        //"ui:widget": "select",
+        "ui:widget": "select",
       },
       controlPlane: {
         "ui:title": "",
         replicas: {
-          "ui:title": "Control plane replicas",
+          "ui:title": "Control Plane Replicas",
           "ui:description": "How many control plane replicas you want",
           "ui:widget": "updown",
         },
@@ -77,12 +77,14 @@ const uiSchema: UiSchema = {
         external_id: { "ui:widget": "hidden" },
         controller_root_disk: {
           "ui:title": "Controller Disk Size",
-          "ui:description": "Root disk size in GiB for control-plane nodes",
+          "ui:description":
+            "Root disk size in GiB for control-plane nodes. Should only be used for the diskless flavors.",
           "ui:widget": "updown",
         },
         worker_root_disk: {
           "ui:title": "Worker Disk Size",
-          "ui:description": "Root disk size in GiB for worker nodes",
+          "ui:description":
+            "Root disk size in GiB for worker nodes. Should only be used for the diskless flavors.",
           "ui:widget": "updown",
         },
         ssh_key: {

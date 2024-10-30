@@ -120,6 +120,7 @@ function formatTitle(key: string): string {
   const customSpelling: { [key: string]: string } = {
     openstack: "OpenStack",
     apiserver: "API Server",
+    ips: "IPs",
   };
 
   return key
@@ -172,7 +173,11 @@ function convertVariablesFormat(obj: GenericObject): GenericObject {
 export function convertYamlFormat(input: string): string {
   const parsedYaml = yaml.load(input) as GenericObject;
   const convertedYaml = convertVariablesFormat(parsedYaml);
-  return yaml.dump(convertedYaml, { quotingType: '"' }).trimEnd();
+  return yaml
+    .dump(convertedYaml, {
+      quotingType: '"',
+    })
+    .trimEnd();
 }
 
 interface EnumField {
@@ -196,7 +201,7 @@ function addEnumToFields(variables: any, fields: EnumField[]) {
   return variables;
 }
 
-const variableFieldsToModify: EnumField[] = [
+const VariableFieldsToModify: EnumField[] = [
   {
     fieldName: "controller_flavor",
     enumValues: ["SCS-2V-4-20s", "SCS-2V-8-20s"],
@@ -204,7 +209,7 @@ const variableFieldsToModify: EnumField[] = [
   },
   {
     fieldName: "worker_flavor",
-    enumValues: ["SCS-2V-4-20s", "SCS-2V-8-20s"],
+    enumValues: ["SCS-2V-4", "SCS-2V-4-20", "SCS-2V-4-20s", "SCS-2V-8-20s"],
     type: "string",
   },
   {
@@ -217,23 +222,127 @@ const variableFieldsToModify: EnumField[] = [
     enumValues: ["none", "octavia-amphora", "octavia-ovn", "yawol"],
     type: "string",
   },
+];
+
+const TopologyFieldsToModify: EnumField[] = [
   {
     fieldName: "version",
-    enumValues: ["none", "octavia-amphora", "octavia-ovn", "yawol"],
+    enumValues: [
+      "v1.29.3",
+      "v1.30.0",
+      "v1.30.1",
+      "v1.30.2",
+      "v1.30.3",
+      "v1.30.4",
+      "v1.30.5",
+      "v1.31.0",
+      "v1.31.1",
+    ],
     type: "string",
   },
 ];
 
+const MetadataFieldsToModify: EnumField[] = [
+  {
+    fieldName: "namespace",
+    enumValues: [
+      "kaas-playground0",
+      "kaas-playground1",
+      "kaas-playground2",
+      "kaas-playground3",
+      "kaas-playground4",
+      "kaas-playground5",
+      "kaas-playground6",
+      "kaas-playground7",
+      "kaas-playground8",
+      "kaas-playground9",
+    ],
+    type: "string",
+  },
+];
+
+function addEnumToTopologyFields(topology: any, fields: EnumField[]): any {
+  fields.forEach((field) => {
+    if (topology[field.fieldName]) {
+      topology[field.fieldName] = {
+        ...topology[field.fieldName],
+        enum: field.enumValues,
+        type: field.type || "string",
+      };
+    }
+  });
+  return topology;
+}
+
 export function modifySchemas(
   definitions: object[],
-  fieldsToModify: EnumField[] = variableFieldsToModify,
+  variableFieldsToModify: EnumField[] = VariableFieldsToModify,
+  topologyFieldsToModify: EnumField[] = TopologyFieldsToModify,
+  metadataFieldsToModify: EnumField[] = MetadataFieldsToModify,
 ) {
-  return updateArrayObjects(
-    definitions,
-    "properties.spec.properties.topology.properties.variables",
-    (variables, key) => {
-      const transformedVariables = transformDataStructure(variables.items);
-      return addEnumToFields(transformedVariables, fieldsToModify);
-    },
-  );
+  return definitions.map((definition) => {
+    // Delete $id and $schema keys at the root of each schema
+    delete (definition as any)["$id"];
+    delete (definition as any)["$schema"];
+    // Make sure name and namespace are required in metadata
+    const metadataRequiredFields = ["name", "namespace"];
+    (definition as any).properties.metadata.required = [
+      ...new Set([
+        ...((definition as any).properties.metadata.required || []),
+        ...metadataRequiredFields,
+      ]),
+    ];
+
+    // Modify metadata fields
+    if ((definition as any).properties.metadata) {
+      (definition as any).properties.metadata = addEnumToFields(
+        (definition as any).properties.metadata,
+        metadataFieldsToModify,
+      );
+    }
+
+    return updateArrayObjects(
+      [definition],
+      "properties.spec.properties",
+      (spec, key) => {
+        // Modify topology
+        if (spec.topology) {
+          spec.topology = updateArrayObjects(
+            [spec.topology],
+            "properties",
+            (topology, key) => {
+              // Modify variables
+              if (topology.variables) {
+                const transformedVariables = transformDataStructure(
+                  topology.variables.items,
+                );
+                topology.variables = addEnumToFields(
+                  transformedVariables,
+                  variableFieldsToModify,
+                );
+              }
+
+              // Modify topology fields
+              topology = addEnumToTopologyFields(
+                topology,
+                topologyFieldsToModify,
+              );
+
+              // Modify controlPlane replicas
+              if (topology.controlPlane?.properties?.replicas?.default) {
+                topology.controlPlane.properties.replicas.default = parseInt(
+                  topology.controlPlane.properties.replicas.default,
+                  10,
+                );
+              }
+
+              return topology;
+            },
+          )[0];
+        }
+
+        return spec;
+      },
+    )[0];
+  });
 }

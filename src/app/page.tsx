@@ -1,4 +1,4 @@
-export const revalidate = 1800; // revalidate every 30mins
+export const revalidate = 900; // revalidate every 15mins
 
 import sortJson from "sort-json";
 
@@ -19,12 +19,12 @@ async function getClusterClasses() {
     const res: { [key: string]: string[] } = await fetch(
       process.env.API_URL + "/namespaces",
     ).then((response) => response.json());
-    const clusterstacks: string[] = res["kaas-playground0"];
+    const clusterstacks: string[] = res["kaas-playground1"];
 
     const getAll: any[] = await Promise.all(
       clusterstacks.map((stack: any) =>
         fetch(
-          process.env.API_URL + "/clusterschema/kaas-playground0/" + stack,
+          process.env.API_URL + "/clusterschema/kaas-playground1/" + stack,
         ).then((response) => response.json()),
       ),
     );
@@ -40,7 +40,7 @@ async function getClusterClasses() {
 
     return schemas;
   } catch (error) {
-    throw new Error("Failed to fetch cluster schemas");
+    throw new Error("Failed to fetch and parse cluster schemas");
   }
 }
 

@@ -4,7 +4,7 @@ Web UI for creating Cluster objects based on SCS Cluster Stacks.
 
 ## Workflow
 
-- Read ClusterClass schema definitions from the kube-apiserver of the moin-cluster via the API provided by [capi-jsgen](https://github.com/SovereignCloudStack/capi-jsgen)
+- Read ClusterClass schema definitions from the kube-apiserver of your cluster via the API provided by [capi-jsgen](https://github.com/SovereignCloudStack/capi-jsgen)
 - Render yaml form with live editor
 - On Download: perform form validation, create yaml file and open up download prompt
 
@@ -30,6 +30,12 @@ Web UI for creating Cluster objects based on SCS Cluster Stacks.
 #### Prerequisites
 
 - [pnpm](https://pnpm.io/installation)
+
+#### Environment variables
+
+- Create a `.env` file similar to `.env.example` in the root of the application and fill in all values.
+
+#### Start the development server
 
 ```bash
 pnpm i

@@ -22,15 +22,6 @@ const config = {
       client: {
         token_endpoint_auth_method: "none",
       },
-      profile(profile) {
-        return {
-          id: profile.sub,
-          name: profile.name,
-          email: profile.email,
-          groups: profile.groups,
-          username: profile.preferred_username,
-        };
-      },
     },
   ],
   basePath: "/api/auth",

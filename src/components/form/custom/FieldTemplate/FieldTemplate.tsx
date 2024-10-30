@@ -67,7 +67,6 @@ export default function FieldTemplate<
             }`}
           >
             {label.charAt(0).toUpperCase() + label.slice(1)}
-            {required ? "*" : null}
           </label>
         )}
         {children}

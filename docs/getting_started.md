@@ -16,6 +16,12 @@ Alternatively you can simply follow the setup instructions outlined below to dep
 
 - [pnpm](https://pnpm.io/installation)
 
+#### Environment variables
+
+- Create a `.env` file similar to `.env.example` in the root of the application and fill in all values.
+
+#### Start the development server
+
 ```bash
 pnpm i
 pnpm dev

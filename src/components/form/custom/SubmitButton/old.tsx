@@ -1,31 +1,37 @@
-"use client";
-
 import { useRef } from "react";
 
-import { stringify } from "yaml";
 import {
+  FormContextType,
   getSubmitButtonOptions,
   RJSFSchema,
+  StrictRJSFSchema,
   SubmitButtonProps,
 } from "@rjsf/utils";
 
 import { Button } from "@/components/ui/button";
 
-export function DownloadButton(
-  props: SubmitButtonProps,
-  formData: any,
-  formStatus: any,
-) {
-  // console.log(props)
+export default function SubmitButton<
+  T = any,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = any,
+>(props: SubmitButtonProps<T, S, F>) {
+  const {
+    submitText,
+    norender,
+    props: submitButtonProps,
+  } = getSubmitButtonOptions<T, S, F>(props.uiSchema);
+
   const { uiSchema } = props;
-  const { norender } = getSubmitButtonOptions(uiSchema);
+
   if (norender) {
     return null;
   }
+
   const linkRef = useRef(null);
+
   const handleDownload = async () => {
-    const yaml_out = stringify(formData.formData).trimEnd();
-    const blob = new Blob([yaml_out], {
+    const test = ["1"];
+    const blob = new Blob(test, {
       type: "application/yaml",
     });
     const url = window.URL.createObjectURL(blob);
@@ -42,12 +48,12 @@ export function DownloadButton(
   };
 
   return (
-    <>
+    <div>
       <a ref={linkRef}>
-        <Button type="submit" onClick={handleDownload} className="mt-8 mr-4">
+        <Button type="submit" {...submitButtonProps} onClick={handleDownload}>
           Download
         </Button>
       </a>
-    </>
+    </div>
   );
 }
