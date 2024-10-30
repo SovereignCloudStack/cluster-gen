@@ -20,7 +20,7 @@ export default function SubmitButton<
   if (norender) {
     return null;
   }
-  console.log(props);
+  //console.log(props);
 
   return (
     <div>

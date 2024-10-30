@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import validator from "@rjsf/validator-ajv8";
 
@@ -36,6 +36,8 @@ import {
 } from "@/components/ui/select";
 
 import { convertYamlFormat } from "@/lib/utils";
+import { createRef } from 'react';
+
 
 export const ClusterForm = (schemas: any) => {
   const schema = schemas?.schemas;
@@ -53,6 +55,14 @@ export const ClusterForm = (schemas: any) => {
     .split("additionalProperties: false")
     .slice(0, 1)[0]
     .trimEnd();
+
+
+  const formRef = createRef<any>();
+  console.log(formRef.current);
+  const onError = (errors: any) => {
+    console.log(errors);
+  };
+  //console.log(formRef?.current?.formElement?.reportValidity());
 
   return (
     <>
@@ -100,19 +110,20 @@ export const ClusterForm = (schemas: any) => {
                   widgets={widgets}
                   formData={formData}
                   onChange={(e: any) => setFormData(e.formData)}
+                  ref={formRef}
+                  onError={onError}
                   // templates={{ ButtonTemplates: { SubmitButton } }}
                 >
                   {/*<DownloadButton formStatus={validator} formData={yaml_out}/> */}
-                  {/*<SubmitButton
+                  <SubmitButton
                     registry={{
                       ...getDefaultRegistry(),
-                      schemaUtils: validator,
+                      schemaUtils: validator.schemaUtils,
                     }}
                     formStatus={validator}
                     formData={yaml_out}
                   />
-
-                  */}
+                  
                 </RJSForm>
               </CardContent>
             </Card>
