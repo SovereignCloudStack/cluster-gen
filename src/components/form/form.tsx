@@ -1,37 +1,31 @@
 "use client";
 
-import { useState, createRef } from "react";
+import { useState } from "react";
 import React from "react";
 import validator from "@rjsf/validator-ajv8";
-import { getDefaultRegistry } from "@rjsf/core";
-import { ObjectFieldTemplateProps } from "@rjsf/utils";
+import { RJSFValidationError } from "@rjsf/utils";
 import { stringify } from "yaml";
 import SyntaxHighlighter from "react-syntax-highlighter";
 
 import { convertYamlFormat } from "@/lib/utils";
 import uiSchema from "@/components/form/uischema";
 import SubmitButton from "@/components/form/custom/SubmitButton/SubmitButton";
-import { Separator } from "@/components/ui/separator";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { widgets } from "@/components/form/widgets";
 import { Form as RJSForm } from "@/components/form/custom";
-import { DownloadButton } from "@/components/form/download-button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectGroup,
-  SelectLabel,
 } from "@/components/ui/select";
+import { useToast } from "@/lib/use-toast";
 
 export const ClusterForm = (schemas: any) => {
   const schema = schemas?.schemas;
@@ -50,6 +44,18 @@ export const ClusterForm = (schemas: any) => {
     .slice(0, 1)[0]
     .trimEnd();
 
+  const focusOnError = (error: RJSFValidationError) => {
+    setTimeout(() => {
+      window.scroll({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
+    }, 0);
+  };
+
+  const { toast } = useToast();
+
   const onSubmit = (data: any, e: React.FormEvent) => {
     const yamlData = JSON.parse(JSON.stringify(data.formData));
     const clusterName = yamlData.metadata?.name || "cluster";
@@ -62,6 +68,10 @@ export const ClusterForm = (schemas: any) => {
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
+
+    toast({
+      title: `🎉 Downloading ${clusterName}.yaml`,
+    });
   };
 
   return (
@@ -112,6 +122,7 @@ export const ClusterForm = (schemas: any) => {
                   formData={formData}
                   onChange={(e: any) => setFormData(e.formData)}
                   onSubmit={onSubmit}
+                  focusOnFirstError={focusOnError}
                   templates={{ ButtonTemplates: { SubmitButton } }}
                 ></RJSForm>
               </CardContent>

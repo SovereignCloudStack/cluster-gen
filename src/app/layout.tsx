@@ -7,6 +7,7 @@ import { siteConfig } from "@/config/site";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import Header from "@/components/header";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: {
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </div>
           </ThemeProvider>
           <TailwindIndicator />
+          <Toaster />
         </body>
       </html>
     </>
