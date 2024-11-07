@@ -2,6 +2,9 @@ export const revalidate = 900; // revalidate every 15mins
 
 import sortJson from "sort-json";
 
+import { modifySchemas } from "@/lib/utils";
+import { auth } from "@/app/auth";
+import type { DexSession } from "@/lib/types";
 import {
   PageActions,
   PageHeader,
@@ -9,10 +12,6 @@ import {
   PageHeaderHeading,
 } from "@/components/page-header";
 import { ClusterForm } from "@/components/form/form";
-
-import { modifySchemas } from "@/lib/utils";
-import { auth } from "@/app/auth";
-import type { DexSession } from "@/lib/types";
 
 async function getClusterClasses() {
   try {
@@ -55,7 +54,6 @@ export default async function IndexPage() {
     session.user = {
       username: session?.profile?.preferred_username,
       name: session.user.name,
-      email: session.user.email,
       groups: session.profile?.groups,
     };
     delete session.profile;

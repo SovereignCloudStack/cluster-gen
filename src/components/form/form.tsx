@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, createRef } from "react";
 import React from "react";
 import validator from "@rjsf/validator-ajv8";
-
 import { getDefaultRegistry } from "@rjsf/core";
 import { ObjectFieldTemplateProps } from "@rjsf/utils";
-
 import { stringify } from "yaml";
 import SyntaxHighlighter from "react-syntax-highlighter";
 
+import { convertYamlFormat } from "@/lib/utils";
 import uiSchema from "@/components/form/uischema";
 import SubmitButton from "@/components/form/custom/SubmitButton/SubmitButton";
 import { Separator } from "@/components/ui/separator";
@@ -24,7 +23,6 @@ import {
 import { widgets } from "@/components/form/widgets";
 import { Form as RJSForm } from "@/components/form/custom";
 import { DownloadButton } from "@/components/form/download-button";
-
 import {
   Select,
   SelectContent,
@@ -34,10 +32,6 @@ import {
   SelectGroup,
   SelectLabel,
 } from "@/components/ui/select";
-
-import { convertYamlFormat } from "@/lib/utils";
-import { createRef } from 'react';
-
 
 export const ClusterForm = (schemas: any) => {
   const schema = schemas?.schemas;
@@ -56,13 +50,19 @@ export const ClusterForm = (schemas: any) => {
     .slice(0, 1)[0]
     .trimEnd();
 
-
-  const formRef = createRef<any>();
-  console.log(formRef.current);
-  const onError = (errors: any) => {
-    console.log(errors);
+  const onSubmit = (data: any, e: React.FormEvent) => {
+    const yamlData = JSON.parse(JSON.stringify(data.formData));
+    const clusterName = yamlData.metadata?.name || "cluster";
+    const blob = new Blob([yaml_out], { type: "application/yaml" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${clusterName}.yaml`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   };
-  //console.log(formRef?.current?.formElement?.reportValidity());
 
   return (
     <>
@@ -107,24 +107,13 @@ export const ClusterForm = (schemas: any) => {
                   schema={schema[clusterstack]}
                   uiSchema={uiSchema}
                   validator={validator}
+                  //liveValidate={true}
                   widgets={widgets}
                   formData={formData}
                   onChange={(e: any) => setFormData(e.formData)}
-                  ref={formRef}
-                  onError={onError}
-                  // templates={{ ButtonTemplates: { SubmitButton } }}
-                >
-                  {/*<DownloadButton formStatus={validator} formData={yaml_out}/> */}
-                  <SubmitButton
-                    registry={{
-                      ...getDefaultRegistry(),
-                      schemaUtils: validator.schemaUtils,
-                    }}
-                    formStatus={validator}
-                    formData={yaml_out}
-                  />
-                  
-                </RJSForm>
+                  onSubmit={onSubmit}
+                  templates={{ ButtonTemplates: { SubmitButton } }}
+                ></RJSForm>
               </CardContent>
             </Card>
           </div>

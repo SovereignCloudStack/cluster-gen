@@ -139,14 +139,18 @@ function formatTitle(key: string): string {
 }
 
 type GenericObject = { [key: string]: any };
-
 function convertVariablesFormat(obj: GenericObject): GenericObject {
   if (typeof obj !== "object" || obj === null) {
     return obj;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map(convertVariablesFormat);
+    return obj.map((item) => {
+      if (typeof item === "string") {
+        return isIpOrSubnet(item) ? item : `"${item}"`;
+      }
+      return convertVariablesFormat(item);
+    });
   }
 
   const result: GenericObject = {};
@@ -159,7 +163,7 @@ function convertVariablesFormat(obj: GenericObject): GenericObject {
     ) {
       result[key] = Object.entries(value).map(([name, val]) => ({
         name,
-        value: val,
+        value: processValue(val),
       }));
     } else {
       result[key] = convertVariablesFormat(value);
@@ -169,15 +173,39 @@ function convertVariablesFormat(obj: GenericObject): GenericObject {
   return result;
 }
 
-// TODO: Types are not correctly converted
+function processValue(val: any): any {
+  if (typeof val === "string") {
+    return isIpOrSubnet(val) ? val : `"${val}"`;
+  }
+  if (Array.isArray(val)) {
+    return val.map((v) => processValue(v));
+  }
+  if (typeof val === "object" && val !== null) {
+    const processed: GenericObject = {};
+    for (const [k, v] of Object.entries(val)) {
+      processed[k] = processValue(v);
+    }
+    return processed;
+  }
+  return val;
+}
+
+function isIpOrSubnet(str: string): boolean {
+  const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+  const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+  const subnetRegex = /^(\d{1,3}\.){3}\d{1,3}\/\d{1,2}$/;
+  return ipv4Regex.test(str) || ipv6Regex.test(str) || subnetRegex.test(str);
+}
+
 export function convertYamlFormat(input: string): string {
   const parsedYaml = yaml.load(input) as GenericObject;
   const convertedYaml = convertVariablesFormat(parsedYaml);
   return yaml
     .dump(convertedYaml, {
-      quotingType: '"',
+      forceQuotes: false,
     })
-    .trimEnd();
+    .trimEnd()
+    .replace(/'/g, "");
 }
 
 interface EnumField {
@@ -204,12 +232,18 @@ function addEnumToFields(variables: any, fields: EnumField[]) {
 const VariableFieldsToModify: EnumField[] = [
   {
     fieldName: "controller_flavor",
-    enumValues: ["SCS-2V-4-20s", "SCS-2V-8-20s"],
+    enumValues: ["SCS-2V-4-20s", "SCS-2V-8-20s", "SCS-4V-8-20"],
     type: "string",
   },
   {
     fieldName: "worker_flavor",
-    enumValues: ["SCS-2V-4", "SCS-2V-4-20", "SCS-2V-4-20s", "SCS-2V-8-20s"],
+    enumValues: [
+      "SCS-2V-4",
+      "SCS-2V-4-20",
+      "SCS-2V-4-20s",
+      "SCS-2V-8-20s",
+      "SCS-4V-8-20",
+    ],
     type: "string",
   },
   {
@@ -281,17 +315,9 @@ export function modifySchemas(
   metadataFieldsToModify: EnumField[] = MetadataFieldsToModify,
 ) {
   return definitions.map((definition) => {
-    // Delete $id and $schema keys at the root of each schema
+    // Delete $id and $schema keys at the root of each schema as they for some reason cause issues with the validator
     delete (definition as any)["$id"];
     delete (definition as any)["$schema"];
-    // Make sure name and namespace are required in metadata
-    const metadataRequiredFields = ["name", "namespace"];
-    (definition as any).properties.metadata.required = [
-      ...new Set([
-        ...((definition as any).properties.metadata.required || []),
-        ...metadataRequiredFields,
-      ]),
-    ];
 
     // Modify metadata fields
     if ((definition as any).properties.metadata) {
@@ -327,14 +353,6 @@ export function modifySchemas(
                 topology,
                 topologyFieldsToModify,
               );
-
-              // Modify controlPlane replicas
-              if (topology.controlPlane?.properties?.replicas?.default) {
-                topology.controlPlane.properties.replicas.default = parseInt(
-                  topology.controlPlane.properties.replicas.default,
-                  10,
-                );
-              }
 
               return topology;
             },

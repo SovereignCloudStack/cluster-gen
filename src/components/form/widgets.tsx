@@ -4,7 +4,6 @@ import { RegistryWidgetsType, WidgetProps } from "@rjsf/utils";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import MultiInput from "@/components/form/multi-input";
 import { useState } from "react";
 

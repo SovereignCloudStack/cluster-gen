@@ -24,10 +24,10 @@ ENV NEXT_TELEMETRY_DISABLED 1
 
 ENV API_URL https://capi-jsgen.moin.k8s.scs.community
 
-#ENV AUTH_SECRET
-#ENV AUTH_TRUST_HOST TRUE
-#ENV DEX_URL 
-#ENV DEX_CLIENT_ID
+ENV AUTH_SECRET=oE/wTr1t1bqOK8zfVBffPEI7uz2NpRAUay8ZJF1R+uc=
+ENV AUTH_TRUST_HOST TRUE
+ENV DEX_URL https://dex.k8s.scs.community
+ENV DEX_CLIENT_ID kubectl
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

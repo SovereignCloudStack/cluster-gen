@@ -16,7 +16,7 @@ export function DownloadButton(
   formData: any,
   formStatus: any,
 ) {
-  console.log(props)
+  console.log(props);
   const { uiSchema } = props;
   const { norender } = getSubmitButtonOptions(uiSchema);
   if (norender) {

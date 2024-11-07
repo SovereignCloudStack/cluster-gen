@@ -62,7 +62,7 @@ Inside `charts/` you can find a minimal chart to deploy Cluster Gen on Kubernete
 
 ### Release
 
-A new [release](https://github.com/SovereignCloudStack/cluster-gen/releases) and build is [triggered](https://github.com/SovereignCloudStack/cluster-gen/blob/main/.github/workflows/release.yml) by a version tag push on main
+A new [release](https://github.com/SovereignCloudStack/cluster-gen/releases) and build is [triggered](https://github.com/SovereignCloudStack/cluster-gen/blob/main/.github/workflows/release.yml) by a version tag push
 
 ```bash
 git tag v0.0.x

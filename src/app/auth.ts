@@ -15,7 +15,7 @@ const config = {
       name: "SCS Dex",
       type: "oidc",
       authorization: {
-        params: { scope: ["openid profile email groups"] },
+        params: { scope: ["openid profile groups"] },
       },
       issuer: process.env.DEX_URL,
       clientId: process.env.DEX_CLIENT_ID,

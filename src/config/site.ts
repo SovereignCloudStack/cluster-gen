@@ -15,6 +15,8 @@ export const siteConfig = {
     "cluster-stacks",
     "Cluster-API",
     "ClusterClass",
+    "capi-jsgen",
+    "CAPI JSGen",
     "Sovereign Cloud Stack",
     "SovereignCloudStack",
     "SCS",

@@ -1,5 +1,4 @@
 import { auth } from "@/app/auth";
-
 import { SignIn, SignOut } from "@/components/auth-buttons";
 
 export default async function UserButton() {

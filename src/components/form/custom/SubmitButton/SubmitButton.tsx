@@ -20,13 +20,12 @@ export default function SubmitButton<
   if (norender) {
     return null;
   }
-  //console.log(props);
 
   return (
     <div>
       <button
         type="submit"
-        className="bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 rounded-md"
+        className="bg-primary px-4 py-2 font-medium text-sm text-primary-foreground hover:bg-primary/90 rounded-md"
         {...submitButtonProps}
       >
         Download

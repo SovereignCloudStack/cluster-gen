@@ -1,9 +1,9 @@
-import "./globals.css";
 import { Metadata, Viewport } from "next";
+
+import "./globals.css";
 import { cn } from "@/lib/utils";
 import { fontSans } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
-
 import { ThemeProvider } from "@/components/theme-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import Header from "@/components/header";
