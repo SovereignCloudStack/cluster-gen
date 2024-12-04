@@ -25,6 +25,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
 
 # typescript
 *.tsbuildinfo
@@ -34,5 +35,5 @@ next-env.d.ts
 package-lock.json
 yarn.lock
 
-# contentlayer
-.contentlayer
+# text editor
+.vscode/*

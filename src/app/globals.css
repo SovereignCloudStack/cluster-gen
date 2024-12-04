@@ -85,3 +85,10 @@
   overflow-x: auto;
   padding: 0.5em;
 }
+
+.pattern {
+  background-color: white;
+  opacity: 0.8;
+  background-image: radial-gradient(#1e293b30 0.8px, #fff 0.8px);
+  background-size: 24px 24px;
+}

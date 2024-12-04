@@ -1,5 +1,5 @@
 # The image that will be used in the deployment
-image: registry.scs.community/cluster-gen/cluster-gen:v0.0.1
+image: registry.scs.community/cluster-gen/cluster-gen:v0.0.8
 
 # Ingress related config
 ingress:

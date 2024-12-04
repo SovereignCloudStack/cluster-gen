@@ -1,10 +1,13 @@
-import "./globals.css";
 import { Metadata, Viewport } from "next";
+
+import "./globals.css";
 import { cn } from "@/lib/utils";
 import { fontSans } from "@/lib/utils";
-import { ThemeProvider } from "@/components/theme-provider";
 import { siteConfig } from "@/config/site";
-import { Navbar } from "@/components/navbar";
+import { ThemeProvider } from "@/components/theme-provider";
+import { TailwindIndicator } from "@/components/tailwind-indicator";
+import Header from "@/components/header";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: {
@@ -13,14 +16,7 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(siteConfig.url),
   description: siteConfig.description,
-  keywords: [
-    "Cluster UI",
-    "Cluster Stacks",
-    "Cluster-API",
-    "ClusterClass",
-    "Sovereign Cloud Stack",
-  ],
-
+  keywords: siteConfig.keywords,
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -54,19 +50,19 @@ export default function RootLayout({ children }: RootLayoutProps) {
             fontSans.variable,
           )}
         >
-          {" "}
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-            {" "}
             <div className="relative flex min-h-screen flex-col bg-background">
-              <Navbar />
+              <Header />
               <main className="flex-1">{children}</main>
             </div>
           </ThemeProvider>
+          <TailwindIndicator />
+          <Toaster />
         </body>
       </html>
     </>
